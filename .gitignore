@@ -1,0 +1,9 @@
+log/
+TS
+__pycache__/
+backup/
+*/files/
+*/__pycache__/
+parse/yes/
+parse/yes.pdf
+parse/result.txt
