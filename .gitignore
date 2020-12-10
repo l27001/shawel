@@ -4,6 +4,6 @@ __pycache__/
 backup/
 */files/
 */__pycache__/
-parse/yes/
-parse/yes.pdf
+parse/files/
+parse/raspisanie.pdf
 parse/result.txt

@@ -13,8 +13,8 @@ def job():
 	soup = BeautifulSoup(resp.text, 'html.parser')
 	src = soup.find("iframe")['src']
 
-	if(os.path.isdir(dir_path+"/parse/yes") == False):
-		os.mkdir(dir_path+"/parse/yes")
+	if(os.path.isdir(dir_path+"/parse/files") == False):
+		os.mkdir(dir_path+"/parse/files")
 
 	try:
 		with open(dir_path+'/parse/result.txt','r') as f:
@@ -24,15 +24,15 @@ def job():
 	if(res != src):
 		with open(dir_path+'/parse/result.txt','w') as f:
 			f.write(src)
-		for n in os.listdir(dir_path+"/parse/yes"):
-			os.remove(dir_path+"/parse/yes/"+n)
-		p = subprocess.Popen(["wget",src,"-O",dir_path+"/parse/yes.pdf","--user-agent='Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.125 Safari/537.36 OPR/70.0.3728.133'"], stdout=open(os.devnull, 'wb'))
+		for n in os.listdir(dir_path+"/parse/files"):
+			os.remove(dir_path+"/parse/files/"+n)
+		p = subprocess.Popen(["wget",src,"-O",dir_path+"/parse/raspisanie.pdf","--user-agent='Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.125 Safari/537.36 OPR/70.0.3728.133'"], stdout=open(os.devnull, 'wb'))
 		p.wait()
-		p = subprocess.Popen(["pdftoppm",dir_path+"/parse/yes.pdf",dir_path+"/parse/yes/out","-png"], stdout=open(os.devnull, 'wb'))
+		p = subprocess.Popen(["pdftoppm",dir_path+"/parse/raspisanie.pdf",dir_path+"/parse/files/out","-png"], stdout=open(os.devnull, 'wb'))
 		p.wait()
 		attach = []
-		for n in sorted(os.listdir(dir_path+"/parse/yes")):
-			attach.append(Methods.upload_img('574214420',dir_path+'/parse/yes/'+n))
+		for n in sorted(os.listdir(dir_path+"/parse/files")):
+			attach.append(Methods.upload_img('574214420',dir_path+'/parse/files/'+n))
 			at = ''
 			i = 0
 		for n in attach:
