@@ -26,9 +26,9 @@ def job():
 			f.write(src)
 		for n in os.listdir(dir_path+"/parse/files"):
 			os.remove(dir_path+"/parse/files/"+n)
-		p = subprocess.Popen(["wget",src,"-O",dir_path+"/parse/raspisanie.pdf","--user-agent='Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.125 Safari/537.36 OPR/70.0.3728.133'"], stdout=open(os.devnull, 'wb'))
+		p = subprocess.Popen(["wget",src,"-qO",dir_path+"/parse/raspisanie.pdf","--user-agent='Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.125 Safari/537.36 OPR/70.0.3728.133'"])
 		p.wait()
-		p = subprocess.Popen(["pdftoppm",dir_path+"/parse/raspisanie.pdf",dir_path+"/parse/files/out","-png"], stdout=open(os.devnull, 'wb'))
+		p = subprocess.Popen(["pdftoppm",dir_path+"/parse/raspisanie.pdf",dir_path+"/parse/files/out","-png"])
 		p.wait()
 		attach = []
 		for n in sorted(os.listdir(dir_path+"/parse/files")):
