@@ -30,6 +30,8 @@ def job():
 		p.wait()
 		p = subprocess.Popen(["pdftoppm",dir_path+"/parse/raspisanie.pdf",dir_path+"/parse/files/out","-png"])
 		p.wait()
+		p = subprocess.Popen(["python3",f"{dir_path}/parse/check-color.py"])
+		p.wait()
 		attach = []
 		for n in sorted(os.listdir(dir_path+"/parse/files")):
 			attach.append(Methods.upload_img('574214420',dir_path+'/parse/files/'+n))
