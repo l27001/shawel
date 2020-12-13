@@ -37,7 +37,8 @@ class Commands:
 		if(userinfo == None):
 			Methods.bd_exec(f"INSERT INTO users (`vkid`) VALUES ('{from_id}')")
 			userinfo = Methods.bd_exec(f"SELECT * FROM users WHERE vkid='{from_id}' LIMIT 1")
-		Methods.log("Message", f"Сообщение: '{text}' {who}")
+		tlog = text.replace("\n",r" \n ")
+		Methods.log("Message", f"Сообщение: '{tlog}' {who}")
 		if(chat_id != from_id):
 			curtime = int(time.time())
 			m = Methods.bd_exec(f"SELECT * FROM mute WHERE vkid = {from_id} AND chatid = {chat_id}")
@@ -369,14 +370,24 @@ class Commands:
 					Methods.send(userinfo['chat_id'], "⚠ Необходима фотография!")
 			else:
 				text = " ".join(text)
+				text1 = ''
+				text2 = ''
 				try:
 					text1 = re.findall(r'.*\|', text)[0].replace("|", "")
 				except:
-					text1 = ''
+					pass
 				try:
 					text2 = re.findall(r'\|.*', text)[0].replace("|", "")
 				except:
-					text2 = ''
+					pass
+				try:
+					text1 = re.findall('.*\n', text)[0].replace("\n", "")
+				except:
+					pass
+				try:
+					text2 = re.findall('\n.*', text)[0].replace("\n", "")
+				except:
+					pass
 				height = 0
 				width = 0
 				for n in userinfo['attachments'][0]['photo']['sizes']:
