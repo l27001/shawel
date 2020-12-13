@@ -366,28 +366,19 @@ class Commands:
 		"""Генерирует демотиватор"""
 		try:
 			if(userinfo['attachments'][0]['type'] != 'photo'):
-				
-					Methods.send(userinfo['chat_id'], "⚠ Необходима фотография!")
+					Methods.send(userinfo['chat_id'], "⚠ Необходима фотография!\n\n/demotiv Строка 1(обязат)\nстрока 2(не обязат)")
 			else:
 				text = " ".join(text)
 				text1 = ''
 				text2 = ''
-				try:
+				if "|" in text:
 					text1 = re.findall(r'.*\|', text)[0].replace("|", "")
-				except:
-					pass
-				try:
 					text2 = re.findall(r'\|.*', text)[0].replace("|", "")
-				except:
-					pass
-				try:
+				elif "\n" in text:
 					text1 = re.findall('.*\n', text)[0].replace("\n", "")
-				except:
-					pass
-				try:
 					text2 = re.findall('\n.*', text)[0].replace("\n", "")
-				except:
-					pass
+				else:
+					text1 = text
 				height = 0
 				width = 0
 				for n in userinfo['attachments'][0]['photo']['sizes']:
@@ -395,8 +386,6 @@ class Commands:
 						height = n['height']
 						width = n['width']
 						url = n['url']
-				if(text1 == '' and text2 == ''):
-					text1 = text
 				demot = demotiv(text1, text2, url)
 				response = Methods.upload_img(userinfo['from_id'], demot)
 				Methods.send(userinfo['chat_id'], "", response)
