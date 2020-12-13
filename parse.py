@@ -34,7 +34,7 @@ def job():
 		p.wait()
 		attach = []
 		for n in sorted(os.listdir(dir_path+"/parse/files")):
-			attach.append(Methods.upload_img('574214420',dir_path+'/parse/files/'+n))
+			attach.append(Methods.upload_img('331465308',dir_path+'/parse/files/'+n))
 			at = ''
 			i = 0
 		for n in attach:
