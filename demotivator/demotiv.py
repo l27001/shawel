@@ -2,12 +2,9 @@
 from PIL import ImageFont
 from PIL import Image
 from PIL import ImageDraw
-import sys,random,requests,os
+from PIL import ImageOps
+import random,requests,os
 dir_path = os.path.dirname(os.path.realpath(__file__))
-
-#text = sys.argv[1]
-#text2 = sys.argv[2]
-#img1 = sys.argv[3]
 
 def demotiv(text,text2,img1):
 	text = str(text)
@@ -29,8 +26,6 @@ def demotiv(text,text2,img1):
 	W = int(W1/2.7)+W1
 	H = int(H1/1.5)+H1
 
-	#W,H = 500,200
-
 	n = H/10+10
 
 	font = ImageFont.truetype(dir_path+'/11874.ttf', int(round(H/15,0)))
@@ -47,32 +42,32 @@ def demotiv(text,text2,img1):
 	text_position2 = (x, (H-H/4)+n-10)
 	text_color = (255,255,255)
 
+	img1 = ImageOps.expand(img1, border=W//150, fill='black')
+	img1 = ImageOps.expand(img1, border=H//300, fill='white')
+
 	img = Image.new("RGB",(W,H),color=0)
 
 	draw = ImageDraw.Draw(img)
 
-	blw = int(W1*1.02)
-	blh = int(H1*1.02)
-
 	x = int((W - W1)/2)
 	y = int(H/9)
 
-	blimg = Image.new("RGB",(blw,blh),color=(255,255,255))
+	watermark = "Made by @shawe1"
 
-	blww = x-(blw - W1)//2
-	blhh = y-(blw - W1)//4
+	waterw,waterh = wm.getsize(watermark)
 
-	raznw = (blw - W1)//6
-	raznh = (blh - H1)//6
-
-	nnimg = Image.new("RGB",(blw-raznw*2,blh-raznh*2))
-
-	img.paste(blimg,(blww, blhh))
-	img.paste(nnimg,(blww+raznw, blhh+raznh))
 	img.paste(img1,(x,y))
 	draw.text(text_position, text, text_color, font)
-	draw.text((0,0), "Made by @shawe1", text_color, wm)
+	draw.text((W-waterw,H-waterh), watermark, text_color, wm)
 	draw.text(text_position2, text2, text_color, font2)
 
 	img.save(nme)
 	return nme
+
+if(__name__ == '__main__'):
+	import sys
+	text = sys.argv[1]
+	text2 = sys.argv[2]
+	img1 = sys.argv[3]
+
+	demotiv(text,text2,img1)
