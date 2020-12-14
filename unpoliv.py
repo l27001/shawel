@@ -13,8 +13,9 @@ def job():
 		Methods.bd_exec(f"UPDATE vk SET `vlaga`=`vlaga`-{rand}")
 		if((vk['vlaga']-rand) == 0 and vk['vlaga'] > 0):
 			Methods.send(peer_id=2000000015,
-				message="Щавель высох.",
-				attachment="photo-183256712_457239040")
+#				message="Щавель высох.",
+#				attachment="photo-183256712_457239040")
+				attachment="photo331465308_457246524")
 			sleep(60)
 
 schedule.every().hour.at(":00").do(job)
