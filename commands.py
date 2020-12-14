@@ -312,7 +312,7 @@ class Commands:
 
 	def valer(userinfo, text):
 		""""""
-		Methods.send(userinfo['chat_id'], "Нет, блять, Акакий")
+		Methods.send(userinfo['chat_id'], "Нет, бл*ть, Акакий")
 
 	def ruslan(userinfo, text):
 		""""""
@@ -334,7 +334,7 @@ class Commands:
 
 	def lera(userinfo, text):
 		""""""
-		Methods.send(userinfo['chat_id'], "Похуй, мы [кибер]панк")
+		Methods.send(userinfo['chat_id'], "Пох*й, мы [кибер]панк")
 
 	def get(userinfo, text):
 		"""Выводит информацию о любом пользователе ВКонтакте."""
@@ -434,16 +434,6 @@ class Commands:
 			Methods.send(userinfo['chat_id'], a)
 		else:
 			Methods.send(userinfo['chat_id'], "✔ Все в порядке.")
-
-	def dick(userinfo, text):
-		""""""
-		response = Methods.users_get(userinfo['from_id'], "sex")
-		if(response[0]['sex'] == 1):
-			Methods.send(userinfo['chat_id'], "No")
-		elif(userinfo['from_id'] == 574214420):
-			Methods.send(userinfo['chat_id'], "Lil")
-		else:
-			Methods.send(userinfo['chat_id'], "Nice")
 
 	def aEXP(userinfo, text):
 		""""""
@@ -882,14 +872,12 @@ cmds = {'info':Commands.info, 'инфо':Commands.info,
 'send':Commands.send, 
 'рассылка':Commands.rass, 
 'log':Commands.log, 'лог':Commands.log, 
-'рассылка':Commands.rass, 
 'рома':Commands.roma, 'валера':Commands.valer, 'валерий':Commands.valer, 'руслан':Commands.ruslan, 
 'кирилл':Commands.kirill, 'кирил':Commands.kirill, 'влад':Commands.vlad, 'лера':Commands.lera, 'валерия':Commands.lera, 
 'get':Commands.get, 
 'demotiv':Commands.demotiv,'dem':Commands.demotiv,'демотиватор':Commands.demotiv, 
 'help':Commands.help, 'помощь':Commands.help, 
 'status':Commands.status, 'статус':Commands.status, 
-'dick':Commands.dick, 
 'aexp':Commands.aEXP, 
 'spam':Commands.spam, 'спам':Commands.spam, 
 'null':Commands.nul, 'обнулить':Commands.nul, 
