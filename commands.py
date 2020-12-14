@@ -116,7 +116,7 @@ class Commands:
 
 	def test(userinfo, text):
 		"""Тест"""
-		Methods.send(userinfo['chat_id'], f"{scrname} Bot by [l27001|Shawel]")
+		Methods.send(userinfo['chat_id'], f"{scrname} by @l27001")
 
 	def goose(userinfo, text):
 		"""Отправляет гуся"""
