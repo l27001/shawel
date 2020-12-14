@@ -52,7 +52,7 @@ def demotiv(text,text2,img1):
 	x = int((W - W1)/2)
 	y = int(H/9)
 
-	watermark = "Made by @shawe1"
+	watermark = "Made by @shawelbot"
 
 	waterw,waterh = wm.getsize(watermark)
 
