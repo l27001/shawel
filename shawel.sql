@@ -1,5 +1,5 @@
 -- Дамп структуры базы данных Shawel Bot.
--- Дата: 09.12.2020
+-- Дата: 16.12.2020
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,11 +18,13 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Структура таблицы `chat-rasp`
+-- Структура таблицы `chats`
 --
 
-CREATE TABLE `chat-rasp` (
-  `id` int(11) NOT NULL
+CREATE TABLE `chats` (
+  `id` int(11) NOT NULL,
+  `raspisanie` int(11) NOT NULL DEFAULT 0,
+  `game-cmds` int(11) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -76,9 +78,9 @@ INSERT INTO `vk` (`rasp`, `vlaga`, `time-poliv`, `autopoliv`) VALUES
 --
 
 --
--- Индексы таблицы `chat-rasp`
+-- Индексы таблицы `chats`
 --
-ALTER TABLE `chat-rasp`
+ALTER TABLE `chats`
   ADD PRIMARY KEY (`id`);
 
 --
