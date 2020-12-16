@@ -864,6 +864,7 @@ class Commands:
 		Methods.send(userinfo['chat_id'],attachment="photo331465308_457246275_be195a9d3957a9cceb")
 
 	def enable_game(userinfo,text):
+		"""Включает/Отключает развлекательный команды (полив, казино) в беседе"""
 		if(userinfo['chat_id'] == userinfo['from_id']):
 			return Methods.send(userinfo['chat_id'],"⚠ Эта команда доступна только в беседе.")
 		k = Methods.get_conversation_members(userinfo['chat_id'])
