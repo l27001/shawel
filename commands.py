@@ -1,9 +1,9 @@
-from methods import Methods
-from other import dir_path, blackwords
 from os.path import isfile, isdir
 from collections import deque
 import time, datetime, random, re, timeit
 from config import groupid
+from methods import Methods
+from other import dir_path, blackwords
 from demotivator.demotiv import demotiv
 from gdz.gdz import gdz as get_gdz
 from voice.voice import mk_voice
@@ -56,18 +56,22 @@ class Commands:
 						Methods.kick_user(chat_id,from_id)
 					return None
 		if('payload' in obj):
-			payload = obj['payload']
-		else:
-			payload = ''
+			userinfo.update({'payload':obj['payload']})
 		text = text.split(' ')
 		if(text[0] == f'[club{groupid}|@{scrname}]' or text[0] == f'[public{groupid}|@{scrname}]'):
 			text.pop(0)
+		if(chat_id > 2000000000 and text[0][0] != '/'):
+			return None
+		elif(chat_id > 2000000000):
+			chatinfo = Methods.bd_exec(f"SELECT * FROM chats WHERE id = '{chat_id}' LIMIT 1")
+			if(chatinfo == None):
+				Methods.bd_exec(f"INSERT INTO chats (`id`) VALUES ({chat_id})")
+				chatinfo = Methods.bd_exec(f"SELECT * FROM chats WHERE id = '{chat_id}' LIMIT 1")
+			userinfo.update({'chatinfo':chatinfo})
 		try:
 			text[0] = text[0].lower()
-			if(chat_id > 2000000000 and text[0][0] != '/'):
-				return None
 			text[0] = text[0].replace('/','')
-			userinfo.update({'replid':replid,'chat_id':chat_id, 'from_id':from_id, 'date':today.strftime("%H:%M:%S %d.%m.%Y"), 'vk':vk, 'attachments':obj['attachments'], 'payload':payload})
+			userinfo.update({'replid':replid,'chat_id':chat_id, 'from_id':from_id, 'date':today.strftime("%H:%M:%S %d.%m.%Y"), 'vk':vk, 'attachments':obj['attachments']})
 			cmds[text[0]](userinfo, text[1:])
 		except (KeyError, IndexError):
 			if(chat_id < 2000000000):
@@ -88,7 +92,7 @@ class Commands:
 			t = t[0].replace("[", "").replace("|", "")
 		except IndexError:
 			t = text[0]
-		if(userinfo['payload'] != ''):
+		if('payload' in userinfo):
 			t = userinfo['payload']
 		try:
 			uinfo = Methods.users_get(t)
@@ -205,8 +209,8 @@ class Commands:
 
 	def poliv(userinfo, text):
 		"""Полей Щавеля!"""
-		if(userinfo['chat_id'] == 2000000016):
-			return Methods.send(userinfo['chat_id'],"В этом чате нечего поливать.")
+		if('chatinfo' in userinfo and userinfo['chatinfo']['game-cmds'] == 0):
+			return Methods.send(userinfo['chat_id'],"Данная команда отключена в этой беседе.")
 		timee = int(time.time())
 		if(userinfo['vk']['time-poliv']+300 < timee):
 			if(userinfo['vk']['vlaga'] == 100):
@@ -289,12 +293,12 @@ class Commands:
 				Methods.bd_exec(f"UPDATE users SET raspisanie='1' WHERE vkid='{userinfo['from_id']}'")
 				Methods.send(userinfo['chat_id'], "Вы подписались на рассылку обновлений расписания.")
 		else:
-			count = Methods.bd_exec(f"SELECT COUNT(*) FROM `chat-rasp` WHERE id = {userinfo['chat_id']}")['COUNT(*)']
+			count = Methods.bd_exec(f"SELECT COUNT(*) FROM `chats` WHERE id = {userinfo['chat_id']} AND raspisanie=1")['COUNT(*)']
 			if(count != 1):
-				Methods.bd_exec(f"INSERT INTO `chat-rasp` (id) VALUES ('{userinfo['chat_id']}')")
+				Methods.bd_exec(f"UPDATE `chats` SET raspisanie=1 WHERE id='{userinfo['chat_id']}'")
 				Methods.send(userinfo['chat_id'],"Вы подписали беседу на рассылку обновлений расписания.\nДля рассылки лично вам напишите боту в ЛС.")
 			else:
-				Methods.bd_exec(f"DELETE FROM `chat-rasp` WHERE id = {userinfo['chat_id']} LIMIT 1")
+				Methods.bd_exec(f"UPDATE `chats` SET raspisanie=0 WHERE id='{userinfo['chat_id']}'")
 				Methods.send(userinfo['chat_id'],"Вы отписали беседу от рассылки обновлений расписания.\nДля рассылки лично вам напишите боту в ЛС.")
 
 	def log(userinfo, text):
@@ -345,7 +349,7 @@ class Commands:
 			t = t[0].replace("[","").replace("|","")
 		except IndexError:
 			t = text[0]
-		if(userinfo['payload'] != ''):
+		if('payload' in userinfo):
 			t = userinfo['payload']
 		try:
 			response = Methods.users_get(t, "sex,photo_id,bdate,online")
@@ -411,9 +415,10 @@ class Commands:
 			if(n == pred):
 				continue
 			pred = n
-			doc = n.__doc__
-			if(doc == ''):
+			if(n.__doc__ == ''):
 				doc = "Нет описания"
+			else:
+				doc = n.__doc__
 			a = a +"\n/"+i+" - "+doc
 		Methods.send(userinfo['chat_id'], a)
 
@@ -577,7 +582,7 @@ class Commands:
 
 	def kazik(userinfo, text):
 		"""Казино"""
-		if(userinfo['chat_id'] == 2000000016):
+		if('chatinfo' in userinfo and userinfo['chatinfo']['game-cmds'] == 0):
 			return Methods.send(userinfo['chat_id'],"Данная команда отключена в этой беседе.")
 		if(len(text) < 2):
 			return Methods.send(userinfo['chat_id'], "⚠ /казино [ставка] [1/2]\n\n1 - Выпадет число от 1 до 100\n2 - Выпадет число от 101 до 200")
@@ -687,7 +692,7 @@ class Commands:
 					admin = 1
 					break
 		if(userinfo['dostup'] < 2 and admin == 0):
-			return Methods.send(userinfo['chat_id'],"Нет доступа")
+			return Methods.send(userinfo['chat_id'],"⛔ Нет доступа")
 		if(userinfo['chat_id'] < 2000000000):
 			return Methods.send(userinfo['chat_id'],"⚠ Это не беседа.")
 		if(userinfo['replid'] == '' and len(text) < 1):
@@ -698,7 +703,7 @@ class Commands:
 				t = t[0].replace("[","").replace("|","")
 			except IndexError:
 				t = text[0]
-			if(userinfo['payload'] != ''):
+			if('payload' in userinfo):
 				t = userinfo['payload']
 			check = Methods.check_name(t)
 			try:
@@ -735,7 +740,7 @@ class Commands:
 					admin = 1
 					break
 		if(userinfo['dostup'] < 2 and admin == 0):
-			return Methods.send(userinfo['chat_id'],"Нет доступа")
+			return Methods.send(userinfo['chat_id'],"⛔ Нет доступа")
 		if(userinfo['chat_id'] < 2000000000):
 			return Methods.send(userinfo['chat_id'],"⚠ Это не беседа.")
 		if(userinfo['replid'] == '' and len(text) < 1):
@@ -746,7 +751,7 @@ class Commands:
 				t = t[0].replace("[","").replace("|","")
 			except IndexError:
 				t = text[0]
-			if(userinfo['payload'] != ''):
+			if('payload' in userinfo):
 				t = userinfo['payload']
 			check = Methods.check_name(t)
 			try:
@@ -799,7 +804,7 @@ class Commands:
 					admin = 1
 					break
 		if(userinfo['dostup'] < 2 and admin == 0):
-			return Methods.send(userinfo['chat_id'],"Нет доступа")
+			return Methods.send(userinfo['chat_id'],"⛔ Нет доступа")
 		if(userinfo['chat_id'] < 2000000000):
 			return Methods.send(userinfo['chat_id'],"⚠ Это не беседа.")
 		if(userinfo['replid'] == '' and len(text) < 1):
@@ -810,7 +815,7 @@ class Commands:
 				t = t[0].replace("[","").replace("|","")
 			except IndexError:
 				t = text[0]
-			if(userinfo['payload'] != ''):
+			if('payload' in userinfo):
 				t = userinfo['payload']
 			check = Methods.check_name(t)
 			try:
@@ -858,6 +863,28 @@ class Commands:
 		""""""
 		Methods.send(userinfo['chat_id'],attachment="photo331465308_457246275_be195a9d3957a9cceb")
 
+	def enable_game(userinfo,text):
+		if(userinfo['chat_id'] == userinfo['from_id']):
+			return Methods.send(userinfo['chat_id'],"⚠ Эта команда доступна только в беседе.")
+		k = Methods.get_conversation_members(userinfo['chat_id'])
+		if(k != 917):
+			for n in k:
+				if(n['member_id'] == userinfo['from_id']):
+					admin = 0
+					if 'is_admin' in n:
+						admin = 1
+						break
+		else:
+			admin = 0
+		if(userinfo['dostup'] < 2 and admin == 0):
+			return Methods.send(userinfo['chat_id'],"⛔ Нет доступа")
+		if(userinfo['chatinfo']['game-cmds'] == 0):
+			Methods.bd_exec(f"UPDATE chats SET `game-cmds`=1 WHERE id={userinfo['chat_id']}")
+			Methods.send(userinfo['chat_id'],"⚠ Развлекательные команды включены.")
+		else:
+			Methods.bd_exec(f"UPDATE chats SET `game-cmds`=0 WHERE id={userinfo['chat_id']}")
+			Methods.send(userinfo['chat_id'],"⚠ Развлекательные команды отключены.")
+
 cmds = {'info':Commands.info, 'инфо':Commands.info, 
 'рандом':Commands.random, 'random':Commands.random, 
 'goose':Commands.goose, 'гусь':Commands.goose, 
@@ -892,4 +919,5 @@ cmds = {'info':Commands.info, 'инфо':Commands.info,
 'kick':Commands.kick,'кик':Commands.kick,
 'mute':Commands.mute,'мут':Commands.mute,
 'unmute':Commands.unmute,'размуть':Commands.unmute,'размутить':Commands.unmute,
-'python':Commands.python,'питон':Commands.python,'пайтон':Commands.python}
+'python':Commands.python,'питон':Commands.python,'пайтон':Commands.python,
+'games':Commands.enable_game}

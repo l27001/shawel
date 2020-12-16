@@ -57,11 +57,11 @@ def job():
 			i+=50
 			time.sleep(1)
 
-		rasp = Methods.bd_exec("SELECT id FROM `chat-rasp`", fetch="all")
+		rasp = Methods.bd_exec("SELECT id FROM `chats` WHERE raspisanie='1'", fetch="all")
 		i = 0
 		while i < len(rasp):
 			a = []
-			r = Methods.bd_exec("SELECT id FROM `chat-rasp` LIMIT "+str(i)+", 50", fetch="all")
+			r = Methods.bd_exec("SELECT id FROM `chats` WHERE raspisanie='1' LIMIT "+str(i)+", 50", fetch="all")
 			for n in r:
 				a.append(str(n['id']))
 			a = ",".join(a)
