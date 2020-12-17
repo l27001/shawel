@@ -863,8 +863,8 @@ class Commands:
 		""""""
 		Methods.send(userinfo['chat_id'],attachment="photo331465308_457246275_be195a9d3957a9cceb")
 
-	def enable_game(userinfo,text):
-		"""Включает/Отключает развлекательный команды (полив, казино) в беседе"""
+	def switch_game(userinfo,text):
+		"""Включает/Отключает развлекательные команды (полив, казино) в беседе"""
 		if(userinfo['chat_id'] == userinfo['from_id']):
 			return Methods.send(userinfo['chat_id'],"⚠ Эта команда доступна только в беседе.")
 		k = Methods.get_conversation_members(userinfo['chat_id'])
@@ -921,4 +921,4 @@ cmds = {'info':Commands.info, 'инфо':Commands.info,
 'mute':Commands.mute,'мут':Commands.mute,
 'unmute':Commands.unmute,'размуть':Commands.unmute,'размутить':Commands.unmute,
 'python':Commands.python,'питон':Commands.python,'пайтон':Commands.python,
-'games':Commands.enable_game}
+'games':Commands.switch_game}
