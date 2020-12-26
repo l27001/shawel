@@ -862,7 +862,15 @@ class Commands:
 
 	def python(userinfo, text):
 		""""""
-		Methods.send(userinfo['chat_id'],attachment="photo331465308_457246275_be195a9d3957a9cceb")
+		rand = random.randint(0, 1)
+		if(rand == 0):
+			Methods.send(userinfo['chat_id'],attachment="photo331465308_457246275_be195a9d3957a9cceb")
+		else:
+			Methods.send(userinfo['chat_id'],"""Вновь печальный влда 
+И случалась у него беда
+Разозлился злой укроп
+Код сказал syntax error
+Агрессивно съев питон""")
 
 	def switch_game(userinfo, text):
 		"""Включает/Отключает развлекательные команды (полив, казино) в беседе"""
