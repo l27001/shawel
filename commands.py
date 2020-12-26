@@ -7,6 +7,7 @@ from other import dir_path, blackwords
 from demotivator.demotiv import demotiv
 from gdz.gdz import gdz as get_gdz
 from voice.voice import mk_voice
+import qiwi
 
 class Commands:
 
@@ -24,7 +25,7 @@ class Commands:
 		from_id = obj['from_id']
 		chat_id = obj['peer_id']
 		text = obj['text']
-		if(from_id < 1):
+		if(from_id < 1 or text == ''):
 			return None
 		userr = Methods.users_get(from_id)
 		userr = userr[0]['last_name']+" "+userr[0]['first_name']
@@ -375,12 +376,12 @@ class Commands:
 				text = " ".join(text)
 				text1 = ''
 				text2 = ''
-				if "|" in text:
-					text1 = re.findall(r'.*\|', text)[0].replace("|", "")
-					text2 = re.findall(r'\|.*', text)[0].replace("|", "")
-				elif "\n" in text:
+				if "\n" in text:
 					text1 = re.findall('.*\n', text)[0].replace("\n", "")
 					text2 = re.findall('\n.*', text)[0].replace("\n", "")
+				elif "|" in text:
+					text1 = re.findall(r'.*\|', text)[0].replace("|", "")
+					text2 = re.findall(r'\|.*', text)[0].replace("|", "")
 				else:
 					text1 = text
 				height = 0
@@ -394,7 +395,7 @@ class Commands:
 				response = Methods.upload_img(userinfo['from_id'], demot)
 				Methods.send(userinfo['chat_id'], "", response)
 		except (KeyError, IndexError):
-				Methods.send(userinfo['chat_id'], "⚠ Необходима фотография!")
+				Methods.send(userinfo['chat_id'], "⚠ Необходима фотография!\n\n/demotiv Строка 1(обязат)\nстрока 2(не обязат)")
 
 	def invalid(userinfo, text):
 		"""Проверка на инвалида"""
@@ -680,7 +681,7 @@ class Commands:
 				Methods.bd_exec("UPDATE users SET dostup="+str(text[1])+" WHERE vkid='"+str(uinfo['vkid'])+"' LIMIT 1")
 				Methods.send(userinfo['chat_id'], f"✔ Установлен уровень доступа {text[1]} пользователю {unfo[0]['last_name']} {unfo[0]['first_name']}")
 
-	def kick(userinfo,text):
+	def kick(userinfo, text):
 		"""Кикнуть пользователя из беседы"""
 		k = Methods.get_conversation_members(userinfo['chat_id'])
 		if(k == 917):
@@ -728,7 +729,7 @@ class Commands:
 			return Methods.send(userinfo['chat_id'],"⚠ Этого человека нельзя кикнуть.")
 		Methods.kick_user(userinfo['chat_id'],replid)
 
-	def unmute(userinfo,text):
+	def unmute(userinfo, text):
 		"""Размутить пользователя"""
 		k = Methods.get_conversation_members(userinfo['chat_id'])
 		if(k == 917):
@@ -792,7 +793,7 @@ class Commands:
 		Methods.bd_exec(f"DELETE FROM mute WHERE chatid = {userinfo['chat_id']} AND vkid = {replid}")
 		Methods.send(userinfo['chat_id'],f"✔ Пользователю [id{replid}|{replid}] снят мут.")
 
-	def mute(userinfo,text):
+	def mute(userinfo, text):
 		"""Замутить пользователя"""
 		k = Methods.get_conversation_members(userinfo['chat_id'])
 		if(k == 917):
@@ -859,11 +860,11 @@ class Commands:
 		Methods.bd_exec(f"INSERT INTO mute (chatid,vkid,date) VALUES ({userinfo['chat_id']},{replid},{curtime+mt})")
 		Methods.send(userinfo['chat_id'],f"✔ Пользователю [id{replid}|{replid}] выдан мут на {mt} секунд.")
 
-	def python(userinfo,text):
+	def python(userinfo, text):
 		""""""
 		Methods.send(userinfo['chat_id'],attachment="photo331465308_457246275_be195a9d3957a9cceb")
 
-	def switch_game(userinfo,text):
+	def switch_game(userinfo, text):
 		"""Включает/Отключает развлекательные команды (полив, казино) в беседе"""
 		if(userinfo['chat_id'] == userinfo['from_id']):
 			return Methods.send(userinfo['chat_id'],"⚠ Эта команда доступна только в беседе.")
@@ -885,6 +886,34 @@ class Commands:
 		else:
 			Methods.bd_exec(f"UPDATE chats SET `game-cmds`=0 WHERE id={userinfo['chat_id']}")
 			Methods.send(userinfo['chat_id'],"⚠ Развлекательные команды отключены.")
+
+	def qiwi_create(userinfo, text):
+		if(userinfo['dostup'] < 2):
+			return Methods.send(userinfo['chat_id'],"⛔ Нет доступа")
+		if(len(text) < 2):
+			return Methods.send(userinfo['chat_id'],"/qpay [sum] [comment]")
+		try:
+			summ = int(text[0])
+		except ValueError:
+			return Methods.send(userinfo['chat_id'],"Сумма должна быть числом!")
+		result = qiwi.create_pay(summ,' '.join(text[1:]))
+		Methods.send(userinfo['chat_id'],f"Ссылка создана.\nID: {result['id']}\nSum: {result['amount']}\nComment: {result['comment']}\n\n{result['url']}")
+
+	def qiwi_check(userinfo, text):
+		if(userinfo['dostup'] < 2):
+			return Methods.send(userinfo['chat_id'],"⛔ Нет доступа")
+		if(len(text) < 1):
+			return Methods.send(userinfo['chat_id'],"/qcheck [bill id]")
+		result = qiwi.check_pay(text[0])
+		Methods.send(userinfo['chat_id'],f"Comment: {result['comment']}\nStatus: {result['status']}\nSum: {result['amount']}")
+
+	def qiwi_revoke(userinfo,text):
+		if(userinfo['dostup'] < 2):
+			return Methods.send(userinfo['chat_id'],"⛔ Нет доступа")
+		if(len(text) < 1):
+			return Methods.send(userinfo['chat_id'],"/qrevoke [bill-id]")
+		qiwi.revoke_pay(text[0])
+		Methods.send(userinfo['chat_id'],"Revoked")
 
 cmds = {'info':Commands.info, 'инфо':Commands.info, 
 'рандом':Commands.random, 'random':Commands.random, 
@@ -921,4 +950,6 @@ cmds = {'info':Commands.info, 'инфо':Commands.info,
 'mute':Commands.mute,'мут':Commands.mute,
 'unmute':Commands.unmute,'размуть':Commands.unmute,'размутить':Commands.unmute,
 'python':Commands.python,'питон':Commands.python,'пайтон':Commands.python,
-'games':Commands.switch_game}
+'games':Commands.switch_game,
+"qpay":Commands.qiwi_create,"qcheck":Commands.qiwi_check,"qrevoke":Commands.qiwi_revoke,
+}
