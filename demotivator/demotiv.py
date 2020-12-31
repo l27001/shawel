@@ -17,7 +17,6 @@ def demotiv(text,text2,img1):
 		out.write(p.content)
 
 	nme = dir_path+'/files/'+str(random.randint(1,655355))+'.jpg'
-
 	img1 = Image.open(img11)
 
 	os.remove(img11)
@@ -38,6 +37,7 @@ def demotiv(text,text2,img1):
 	text_position = (x, H-H/4)
 
 	w,h = font2.getsize(text2)
+
 	x = (W-w)/2
 	text_position2 = (x, (H-H/4)+n-10)
 	text_color = (255,255,255)
@@ -46,7 +46,6 @@ def demotiv(text,text2,img1):
 	img1 = ImageOps.expand(img1, border=H//300, fill='white')
 
 	img = Image.new("RGB",(W,H),color=0)
-
 	draw = ImageDraw.Draw(img)
 
 	x = int((W - W1)/2)

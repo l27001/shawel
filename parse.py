@@ -80,6 +80,8 @@ def run():
 			time.sleep(1)
 	except KeyboardInterrupt:
 		exit()
+	except Exception as e:
+		Methods.send(331465308,f"С парсером что-то не так!\n\n{e}")
 
 if(__name__ == '__main__'):
 	run()

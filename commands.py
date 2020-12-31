@@ -416,7 +416,7 @@ class Commands:
 			if(n == pred):
 				continue
 			pred = n
-			if(n.__doc__ == ''):
+			if(n.__doc__ == None or n.__doc__ == ''):
 				doc = "Нет описания"
 			else:
 				doc = n.__doc__
@@ -896,6 +896,7 @@ class Commands:
 			Methods.send(userinfo['chat_id'],"⚠ Развлекательные команды отключены.")
 
 	def qiwi_create(userinfo, text):
+		""""""
 		if(userinfo['dostup'] < 2):
 			return Methods.send(userinfo['chat_id'],"⛔ Нет доступа")
 		if(len(text) < 2):
@@ -908,6 +909,7 @@ class Commands:
 		Methods.send(userinfo['chat_id'],f"Ссылка создана.\nID: {result['id']}\nSum: {result['amount']}\nComment: {result['comment']}\n\n{result['url']}")
 
 	def qiwi_check(userinfo, text):
+		""""""
 		if(userinfo['dostup'] < 2):
 			return Methods.send(userinfo['chat_id'],"⛔ Нет доступа")
 		if(len(text) < 1):
@@ -916,6 +918,7 @@ class Commands:
 		Methods.send(userinfo['chat_id'],f"Comment: {result['comment']}\nStatus: {result['status']}\nSum: {result['amount']}")
 
 	def qiwi_revoke(userinfo,text):
+		""""""
 		if(userinfo['dostup'] < 2):
 			return Methods.send(userinfo['chat_id'],"⛔ Нет доступа")
 		if(len(text) < 1):
