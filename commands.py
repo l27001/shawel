@@ -395,37 +395,7 @@ class Commands:
 						height = n['height']
 						width = n['width']
 						url = n['url']
-				demot = demotiv(text1, text2, url, 1)
-				response = Methods.upload_img(userinfo['from_id'], demot)
-				Methods.send(userinfo['chat_id'], "", response)
-		except (KeyError, IndexError):
-				Methods.send(userinfo['chat_id'], "⚠ Необходима фотография!\n\n/demotiv Строка 1(обязат)\nстрока 2(не обязат)")
-
-	def recurse(userinfo, text):
-		"""Генерирует демотиватор(рекурсивно)"""
-		try:
-			if(userinfo['attachments'][0]['type'] != 'photo'):
-				Methods.send(userinfo['chat_id'], "⚠ Необходима фотография!\n\n/demotiv Строка 1(обязат)\nстрока 2(не обязат)")
-			else:
-				text = " ".join(text)
-				text1 = ''
-				text2 = ''
-				if "\n" in text:
-					text1 = re.findall('.*\n', text)[0].replace("\n", "")
-					text2 = re.findall('\n.*', text)[0].replace("\n", "")
-				elif "|" in text:
-					text1 = re.findall(r'.*\|', text)[0].replace("|", "")
-					text2 = re.findall(r'\|.*', text)[0].replace("|", "")
-				else:
-					text1 = text
-				height = 0
-				width = 0
-				for n in userinfo['attachments'][0]['photo']['sizes']:
-					if(n['height'] > height or n['width'] > height):
-						height = n['height']
-						width = n['width']
-						url = n['url']
-				demot = demotiv(text1, text2, url, 5)
+				demot = demotiv(text1, text2, url)
 				response = Methods.upload_img(userinfo['from_id'], demot)
 				Methods.send(userinfo['chat_id'], "", response)
 		except (KeyError, IndexError):
@@ -1049,5 +1019,4 @@ cmds = {'info':Commands.info, 'инфо':Commands.info,
 'python':Commands.python,'питон':Commands.python,'пайтон':Commands.python,
 'games':Commands.switch_game,
 "qpay":Commands.qiwi_create,"qcheck":Commands.qiwi_check,"qrevoke":Commands.qiwi_revoke,
-"рекурсия":Commands.recurse,"recurse":Commands.recurse,
 }
