@@ -99,11 +99,13 @@ class Commands:
 			uinfo = Methods.users_get(t)
 		except Exception as e:
 			if(e.code == 113):
-				return Methods.send(userinfo['chat_id'], "⚠ Invalid user_id")
+				Methods.send(userinfo['chat_id'], "⚠ Invalid user_id")
+				return 0
 		name = f"[id{uinfo[0]['id']}|{uinfo[0]['last_name']} {uinfo[0]['first_name']}]"
 		uinfo = Methods.bd_exec(f"SELECT * FROM users WHERE vkid='{uinfo[0]['id']}' LIMIT 1")
 		if(uinfo == None):
-			return Methods.send(userinfo['chat_id'], "⚠ Пользователь не найден в БД")
+			Methods.send(userinfo['chat_id'], "⚠ Пользователь не найден в БД")
+			return 0
 		if(uinfo['raspisanie'] == 0):
 			raspisanie = 'Рассылка: Не подписан'
 		else:
@@ -121,7 +123,7 @@ class Commands:
 
 	def test(userinfo, text):
 		"""Тест"""
-		Methods.send(userinfo['chat_id'], f"{scrname} by @l27001")
+		Methods.send(userinfo['chat_id'], f"{scrname} by @l27001\nВыполнено команд: {acmds}\nОшибок при выполнении команд: {aerrs}\nDebug: {DEBUG}\nЗапущен: {timestart.strftime('%Y-%m-%d %H:%M:%S')}\nВремя работы: {datetime.datetime.now()-timestart}")
 
 	def goose(userinfo, text):
 		"""Отправляет гуся"""
@@ -211,7 +213,8 @@ class Commands:
 	def poliv(userinfo, text):
 		"""Полей Щавеля!"""
 		if('chatinfo' in userinfo and userinfo['chatinfo']['game-cmds'] == 0):
-			return Methods.send(userinfo['chat_id'],"Данная команда отключена в этой беседе.")
+			Methods.send(userinfo['chat_id'],"Данная команда отключена в этой беседе.")
+			return 0
 		timee = int(time.time())
 		if(userinfo['vk']['time-poliv']+300 < timee):
 			if(userinfo['vk']['vlaga'] == 100):
@@ -356,7 +359,8 @@ class Commands:
 			response = Methods.users_get(t, "sex,photo_id,bdate,online")
 		except Exception as e:
 			if(e.code == 113):
-				return Methods.send(userinfo['chat_id'], "⚠ Invalid user_id '"+str(t)+"'")
+				Methods.send(userinfo['chat_id'], "⚠ Invalid user_id '"+str(t)+"'")
+				return 0
 		txt = ""
 		for n in response[0]:
 			txt = txt+str(n)+" => "+str(response[0][n])+"\n"
@@ -467,9 +471,9 @@ class Commands:
 			a.append(i['friendly_name']+" -> "+i['status'])
 		if(len(a) > 0):
 			a = "\n".join(a)
-			Methods.send(userinfo['chat_id'], a+"\n\nhttps://status.shawel.ezdomain.ru/")
+			Methods.send(userinfo['chat_id'], a+"\n\nhttps://status.ezdomain.ru/")
 		else:
-			Methods.send(userinfo['chat_id'], "✔ Все в порядке.\n\nhttps://status.shawel.ezdomain.ru/")
+			Methods.send(userinfo['chat_id'], "✔ Все в порядке.\n\nhttps://status.ezdomain.ru/")
 
 	def aEXP(userinfo, text):
 		""""""
@@ -487,7 +491,8 @@ class Commands:
 				unfo = Methods.users_get(t)
 			except Exception as e:
 				if(e.code == 113):
-					return Methods.send(userinfo['chat_id'], "⚠ Invalid user_id")
+					Methods.send(userinfo['chat_id'], "⚠ Invalid user_id")
+					return 0
 			uinfo = Methods.bd_exec(f"SELECT * FROM users WHERE vkid='{unfo[0]['id']}' LIMIT 1")
 			if(uinfo == None):
 				Methods.send(userinfo['chat_id'], "⚠ Пользователь не найден в БД")
@@ -501,9 +506,11 @@ class Commands:
 						text[1] = "+"+str(text[1])
 						do = "Добавлено"
 					else:
-						return Methods.send(userinfo['chat_id'], "⚠ Введено не число")
+						Methods.send(userinfo['chat_id'], "⚠ Введено не число")
+						return 0
 				except ValueError:
-					return Methods.send(userinfo['chat_id'], "⚠ Введено не число")
+					Methods.send(userinfo['chat_id'], "⚠ Введено не число")
+					return 0
 				Methods.bd_exec("UPDATE users SET EXP=EXP"+text[1]+" WHERE vkid='"+str(uinfo['vkid'])+"' LIMIT 1")
 				Methods.send(userinfo['chat_id'], "✔ "+do+" "+text[1]+" EXP пользователю "+unfo[0]['last_name']+" "+unfo[0]['first_name'])
 
@@ -589,18 +596,22 @@ class Commands:
 	def gdz(userinfo, text):
 		"""ГДЗ"""
 		if(len(text) < 2):
-			return Methods.send(userinfo['chat_id'], "⚠ /gdz [предмет] [номер/страница]")
+			Methods.send(userinfo['chat_id'], "⚠ /gdz [предмет] [номер/страница]")
+			return 0
 		try:
 			nom = int(text[1])
 			if(nom < 1):
 				raise('<1')
 		except:
-			return Methods.send(userinfo['chat_id'], "⚠ Введите число. /gdz [предмет] [номер/страница]")
+			Methods.send(userinfo['chat_id'], "⚠ Введите число. /gdz [предмет] [номер/страница]")
+			return 0
 		a = get_gdz(text[0], nom)
 		if(a == 1):
-			return Methods.send(userinfo['chat_id'], "⚠ Номер/страница не найден.")
+			Methods.send(userinfo['chat_id'], "⚠ Номер/страница не найден.")
+			return 0
 		if(a == 2):
-			return Methods.send(userinfo['chat_id'], "⚠ Неизвестный предмет. /gdz [предмет] [номер/страница] Доступные предметы:\nАлгебра\nГеометрия\nАнглийский")
+			Methods.send(userinfo['chat_id'], "⚠ Неизвестный предмет. /gdz [предмет] [номер/страница] Доступные предметы:\nАлгебра\nГеометрия\nАнглийский")
+			return 0
 		i = 0
 		b = []
 		for n in a:
@@ -614,9 +625,11 @@ class Commands:
 	def kazik(userinfo, text):
 		"""Казино"""
 		if('chatinfo' in userinfo and userinfo['chatinfo']['game-cmds'] == 0):
-			return Methods.send(userinfo['chat_id'],"Данная команда отключена в этой беседе.")
+			Methods.send(userinfo['chat_id'],"Данная команда отключена в этой беседе.")
+			return 0
 		if(len(text) < 2):
-			return Methods.send(userinfo['chat_id'], "⚠ /казино [ставка] [1/2]\n\n1 - Выпадет число от 1 до 100\n2 - Выпадет число от 101 до 200")
+			Methods.send(userinfo['chat_id'], "⚠ /казино [ставка] [1/2]\n\n1 - Выпадет число от 1 до 100\n2 - Выпадет число от 101 до 200")
+			return 0
 		try:
 			stav = int(text[0])
 			if(stav < 1):
@@ -625,11 +638,14 @@ class Commands:
 			if(y < 1 or y > 2):
 				raise ValueError
 		except ValueError:
-			return Methods.send(userinfo['chat_id'], "⚠ Введите число. /казино [ставка] [1/2]\n\n1 - Выпадет число от 1 до 100\n2 - Выпадет число от 101 до 200")
+			Methods.send(userinfo['chat_id'], "⚠ Введите число. /казино [ставка] [1/2]\n\n1 - Выпадет число от 1 до 100\n2 - Выпадет число от 101 до 200")
+			return 0
 		if(stav < 5 and userinfo['EXP'] > 5):
-			return Methods.send(userinfo['chat_id'],"⚠ Ставка не может быть меньше 5-ти.")
+			Methods.send(userinfo['chat_id'],"⚠ Ставка не может быть меньше 5-ти.")
+			return 0
 		if(stav > userinfo['EXP']):
-			return Methods.send(userinfo['chat_id'], f"⚠ У вас нет столько EXP.\nВаши EXP {userinfo['EXP']}")
+			Methods.send(userinfo['chat_id'], f"⚠ У вас нет столько EXP.\nВаши EXP {userinfo['EXP']}")
+			return 0
 		if(userinfo['dostup'] > 0 and len(text) >= 3):
 			try:
 				win = int(text[2])
@@ -650,32 +666,36 @@ class Commands:
 	def say(userinfo, text):
 		"""Скажи ...."""
 		if(len(text) < 1):
-			return Methods.send(userinfo['chat_id'], "/say [text]")
+			Methods.send(userinfo['chat_id'], "/say [text]")
+			return 0
 		ttext = [item.lower() for item in text]
 		cc = list(set(ttext) & set(blackwords))
 		if(len(cc) > 0):
-			return Methods.send(userinfo['chat_id'], "⚠ Так нельзя говорить.")
+			Methods.send(userinfo['chat_id'], "⚠ Так нельзя говорить.")
+			return 0
 		text = " ".join(text)
 		Methods.send(userinfo['chat_id'], text)
 
 	def voice(userinfo, text):
 		"""Озвучить текст"""
 		if(len(text) < 1):
-			return Methods.send(userinfo['chat_id'], "/voice [text]")
-		#if(len(text) > 51):
-		#	return Methods.send(userinfo['chat_id'], "⚠ Слишком много слов (более 50)")
+			Methods.send(userinfo['chat_id'], "/voice [text]")
+			return 0
 		ttext = [item.lower() for item in text]
 		cc = list(set(ttext) & set(blackwords))
 		if(len(cc) > 0):
-			return Methods.send(userinfo['chat_id'], "⚠ Так нельзя говорить.")
+			Methods.send(userinfo['chat_id'], "⚠ Так нельзя говорить.")
+			return 0
 		text = " ".join(text)
 		if(len(text) > 400):
-			return Methods.send(userinfo['chat_id'], "⚠ Слишком много символов (более 400)")
+			Methods.send(userinfo['chat_id'], "⚠ Слишком много символов (более 400)")
+			return 0
 		Methods.set_typing(userinfo['chat_id'],type='audiomessage')
 		try:
 			file = mk_voice(text)
 		except AssertionError:
-			return Methods.send(userinfo['chat_id'],"⚠ Введен некорректный текст для озвучивания.")
+			Methods.send(userinfo['chat_id'],"⚠ Введен некорректный текст для озвучивания.")
+			return 0
 		file = Methods.upload_voice(userinfo['from_id'], file)
 		Methods.send(userinfo['chat_id'], attachment=file)
 
@@ -695,7 +715,8 @@ class Commands:
 				unfo = Methods.users_get(t)
 			except Exception as e:
 				if(e.code == 113):
-					return Methods.send(userinfo['chat_id'], "⚠ Invalid user_id")
+					Methods.send(userinfo['chat_id'], "⚠ Invalid user_id")
+					return 0
 			uinfo = Methods.bd_exec(f"SELECT * FROM users WHERE vkid='{unfo[0]['id']}' LIMIT 1")
 			if(uinfo == None):
 				Methods.send(userinfo['chat_id'], "⚠ Пользователь не найден в БД")
@@ -703,11 +724,14 @@ class Commands:
 				try:
 					text[1] = int(text[1])
 					if(text[1] < 0):
-						return Methods.send(userinfo['chat_id'],"⚠ Доступ не может быть больее 2 или менее 0")
+						Methods.send(userinfo['chat_id'],"⚠ Доступ не может быть больее 2 или менее 0")
+						return 0
 					elif(text[1] > 2):
-						return Methods.send(userinfo['chat_id'],"⚠ Доступ не может быть более 2 или менее 0")
+						Methods.send(userinfo['chat_id'],"⚠ Доступ не может быть более 2 или менее 0")
+						return 0
 				except ValueError:
-					return Methods.send(userinfo['chat_id'], "⚠ Введено не число")
+					Methods.send(userinfo['chat_id'], "⚠ Введено не число")
+					return 0
 				Methods.bd_exec("UPDATE users SET dostup="+str(text[1])+" WHERE vkid='"+str(uinfo['vkid'])+"' LIMIT 1")
 				Methods.send(userinfo['chat_id'], f"✔ Установлен уровень доступа {text[1]} пользователю {unfo[0]['last_name']} {unfo[0]['first_name']}")
 
@@ -715,7 +739,8 @@ class Commands:
 		"""Кикнуть пользователя из беседы"""
 		k = Methods.get_conversation_members(userinfo['chat_id'])
 		if(k == 917):
-			return Methods.send(userinfo['chat_id'],"⚠ У меня нет доступа администратора.")
+			Methods.send(userinfo['chat_id'],"⚠ У меня нет доступа администратора.")
+			return 0
 		for n in k:
 			if(n['member_id'] == userinfo['from_id']):
 				admin = 0
@@ -723,11 +748,14 @@ class Commands:
 					admin = 1
 					break
 		if(userinfo['dostup'] < 2 and admin == 0):
-			return Methods.send(userinfo['chat_id'],"⛔ Нет доступа")
+			Methods.send(userinfo['chat_id'],"⛔ Нет доступа")
+			return 0
 		if(userinfo['chat_id'] < 2000000000):
-			return Methods.send(userinfo['chat_id'],"⚠ Это не беседа.")
+			Methods.send(userinfo['chat_id'],"⚠ Это не беседа.")
+			return 0
 		if(userinfo['replid'] == '' and len(text) < 1):
-			return Methods.send(userinfo['chat_id'],"⚠ Укажите пользователя или ответьте на сообщение.")
+			Methods.send(userinfo['chat_id'],"⚠ Укажите пользователя или ответьте на сообщение.")
+			return 0
 		elif(userinfo['replid'] == '' and len(text) >= 1):
 			t = re.findall(r'\[.*\|', text[0])
 			try:
@@ -750,20 +778,24 @@ class Commands:
 		for n in k:
 			if(n['member_id'] == replid):
 				if 'is_admin' in n:
-					return Methods.send(userinfo['chat_id'],"⚠ Этого человека нельзя кикнуть.")
+					Methods.send(userinfo['chat_id'],"⚠ Этого человека нельзя кикнуть.")
+					return 0
 				s = 1
 				break
 		if(s != 1):
-			return Methods.send(userinfo['chat_id'],"⚠ Этого человека нет в беседе.")
+			Methods.send(userinfo['chat_id'],"⚠ Этого человека нет в беседе.")
+			return 0
 		if(replid == groupid or replid == userinfo['from_id'] or replid == int(f"-{groupid}")):
-			return Methods.send(userinfo['chat_id'],"⚠ Этого человека нельзя кикнуть.")
+			Methods.send(userinfo['chat_id'],"⚠ Этого человека нельзя кикнуть.")
+			return 0
 		Methods.kick_user(userinfo['chat_id'],replid)
 
 	def unmute(userinfo, text):
 		"""Размутить пользователя"""
 		k = Methods.get_conversation_members(userinfo['chat_id'])
 		if(k == 917):
-			return Methods.send(userinfo['chat_id'],"⚠ У меня нет доступа администратора.")
+			Methods.send(userinfo['chat_id'],"⚠ У меня нет доступа администратора.")
+			return 0
 		for n in k:
 			if(n['member_id'] == userinfo['from_id']):
 				admin = 0
@@ -771,11 +803,14 @@ class Commands:
 					admin = 1
 					break
 		if(userinfo['dostup'] < 2 and admin == 0):
-			return Methods.send(userinfo['chat_id'],"⛔ Нет доступа")
+			Methods.send(userinfo['chat_id'],"⛔ Нет доступа")
+			return 0
 		if(userinfo['chat_id'] < 2000000000):
-			return Methods.send(userinfo['chat_id'],"⚠ Это не беседа.")
+			Methods.send(userinfo['chat_id'],"⚠ Это не беседа.")
+			return 0
 		if(userinfo['replid'] == '' and len(text) < 1):
-			return Methods.send(userinfo['chat_id'],"⚠ Укажите пользователя или ответьте на сообщение и укажите время в минутах.")
+			Methods.send(userinfo['chat_id'],"⚠ Укажите пользователя или ответьте на сообщение и укажите время в минутах.")
+			return 0
 		elif(userinfo['replid'] == '' and len(text) >= 1):
 			t = re.findall(r'\[.*\|', text[0])
 			try:
@@ -809,17 +844,21 @@ class Commands:
 		for n in k:
 			if(n['member_id'] == replid):
 				if 'is_admin' in n:
-					return Methods.send(userinfo['chat_id'],"⚠ Этого человека нельзя замутить.")
+					Methods.send(userinfo['chat_id'],"⚠ Этого человека нельзя замутить.")
+					return 0
 				s = 1
 				break
 		if(s != 1):
-			return Methods.send(userinfo['chat_id'],"⚠ Этого человека нет в беседе.")
+			Methods.send(userinfo['chat_id'],"⚠ Этого человека нет в беседе.")
+			return 0
 		if(replid == groupid or replid == userinfo['from_id'] or replid == int(f"-{groupid}")):
-			return Methods.send(userinfo['chat_id'],"⚠ Этого человека нельзя замутить.")
+			Methods.send(userinfo['chat_id'],"⚠ Этого человека нельзя замутить.")
+			return 0
 		m = Methods.bd_exec(f"SELECT * FROM mute WHERE vkid = {replid} AND chatid = {userinfo['chat_id']}",fetch='all')
 		curtime = int(time.time())
 		if(len(m) == 0):
-			return Methods.send(userinfo['chat_id'],"Этот человек не в муте.")
+			Methods.send(userinfo['chat_id'],"Этот человек не в муте.")
+			return 0
 		Methods.bd_exec(f"DELETE FROM mute WHERE chatid = {userinfo['chat_id']} AND vkid = {replid}")
 		Methods.send(userinfo['chat_id'],f"✔ Пользователю [id{replid}|{replid}] снят мут.")
 
@@ -827,7 +866,8 @@ class Commands:
 		"""Замутить пользователя"""
 		k = Methods.get_conversation_members(userinfo['chat_id'])
 		if(k == 917):
-			return Methods.send(userinfo['chat_id'],"⚠ У меня нет доступа администратора.")
+			Methods.send(userinfo['chat_id'],"⚠ У меня нет доступа администратора.")
+			return 0
 		for n in k:
 			if(n['member_id'] == userinfo['from_id']):
 				admin = 0
@@ -835,11 +875,14 @@ class Commands:
 					admin = 1
 					break
 		if(userinfo['dostup'] < 2 and admin == 0):
-			return Methods.send(userinfo['chat_id'],"⛔ Нет доступа")
+			Methods.send(userinfo['chat_id'],"⛔ Нет доступа")
+			return 0
 		if(userinfo['chat_id'] < 2000000000):
-			return Methods.send(userinfo['chat_id'],"⚠ Это не беседа.")
+			Methods.send(userinfo['chat_id'],"⚠ Это не беседа.")
+			return 0
 		if(userinfo['replid'] == '' and len(text) < 1):
-			return Methods.send(userinfo['chat_id'],"⚠ Укажите пользователя или ответьте на сообщение и укажите время в минутах.")
+			Methods.send(userinfo['chat_id'],"⚠ Укажите пользователя или ответьте на сообщение и укажите время в минутах.")
+			return 0
 		elif(userinfo['replid'] == '' and len(text) >= 1):
 			t = re.findall(r'\[.*\|', text[0])
 			try:
@@ -873,18 +916,22 @@ class Commands:
 		for n in k:
 			if(n['member_id'] == replid):
 				if 'is_admin' in n:
-					return Methods.send(userinfo['chat_id'],"⚠ Этого человека нельзя замутить.")
+					Methods.send(userinfo['chat_id'],"⚠ Этого человека нельзя замутить.")
+					return 0
 				s = 1
 				break
 		if(s != 1):
-			return Methods.send(userinfo['chat_id'],"⚠ Этого человека нет в беседе.")
+			Methods.send(userinfo['chat_id'],"⚠ Этого человека нет в беседе.")
+			return 0
 		if(replid == groupid or replid == userinfo['from_id'] or replid == int(f"-{groupid}")):
-			return Methods.send(userinfo['chat_id'],"⚠ Этого человека нельзя замутить.")
+			Methods.send(userinfo['chat_id'],"⚠ Этого человека нельзя замутить.")
+			return 0
 		m = Methods.bd_exec(f"SELECT * FROM mute WHERE vkid = {replid} AND chatid = {userinfo['chat_id']}",fetch='all')
 		curtime = int(time.time())
 		if(len(m) >= 1):
 			if(curtime <= m[0]['date']):
-				return Methods.send(userinfo['chat_id'],"Этот человек уже в муте.")
+				Methods.send(userinfo['chat_id'],"Этот человек уже в муте.")
+				return 0
 			else:
 				Methods.bd_exec(f"DELETE FROM mute WHERE chatid = {userinfo['chat_id']} AND vkid = {replid}")
 		Methods.bd_exec(f"INSERT INTO mute (chatid,vkid,date) VALUES ({userinfo['chat_id']},{replid},{curtime+mt})")
@@ -905,7 +952,8 @@ class Commands:
 	def switch_game(userinfo, text):
 		"""Включает/Отключает развлекательные команды (полив, казино) в беседе"""
 		if(userinfo['chat_id'] == userinfo['from_id']):
-			return Methods.send(userinfo['chat_id'],"⚠ Эта команда доступна только в беседе.")
+			Methods.send(userinfo['chat_id'],"⚠ Эта команда доступна только в беседе.")
+			return 0
 		k = Methods.get_conversation_members(userinfo['chat_id'])
 		if(k != 917):
 			for n in k:
@@ -917,7 +965,8 @@ class Commands:
 		else:
 			admin = 0
 		if(userinfo['dostup'] < 2 and admin == 0):
-			return Methods.send(userinfo['chat_id'],"⛔ Нет доступа")
+			Methods.send(userinfo['chat_id'],"⛔ Нет доступа")
+			return 0
 		if(userinfo['chatinfo']['game-cmds'] == 0):
 			Methods.bd_exec(f"UPDATE chats SET `game-cmds`=1 WHERE id={userinfo['chat_id']}")
 			Methods.send(userinfo['chat_id'],"⚠ Развлекательные команды включены.")
@@ -928,31 +977,38 @@ class Commands:
 	def qiwi_create(userinfo, text):
 		""""""
 		if(userinfo['dostup'] < 2):
-			return Methods.send(userinfo['chat_id'],"⛔ Нет доступа")
+			Methods.send(userinfo['chat_id'],"⛔ Нет доступа")
+			return 0
 		if(len(text) < 2):
-			return Methods.send(userinfo['chat_id'],"/qpay [sum] [comment]")
+			Methods.send(userinfo['chat_id'],"/qpay [sum] [comment]")
+			return 0
 		try:
 			summ = int(text[0])
 		except ValueError:
-			return Methods.send(userinfo['chat_id'],"Сумма должна быть числом!")
+			Methods.send(userinfo['chat_id'],"Сумма должна быть числом!")
+			return 0
 		result = qiwi.create_pay(summ,' '.join(text[1:]))
 		Methods.send(userinfo['chat_id'],f"Ссылка создана.\nID: {result['id']}\nSum: {result['amount']}\nComment: {result['comment']}\n\n{result['url']}")
 
 	def qiwi_check(userinfo, text):
 		""""""
 		if(userinfo['dostup'] < 2):
-			return Methods.send(userinfo['chat_id'],"⛔ Нет доступа")
+			Methods.send(userinfo['chat_id'],"⛔ Нет доступа")
+			return 0
 		if(len(text) < 1):
-			return Methods.send(userinfo['chat_id'],"/qcheck [bill id]")
+			Methods.send(userinfo['chat_id'],"/qcheck [bill id]")
+			return 0
 		result = qiwi.check_pay(text[0])
 		Methods.send(userinfo['chat_id'],f"Comment: {result['comment']}\nStatus: {result['status']}\nSum: {result['amount']}")
 
 	def qiwi_revoke(userinfo,text):
 		""""""
 		if(userinfo['dostup'] < 2):
-			return Methods.send(userinfo['chat_id'],"⛔ Нет доступа")
+			Methods.send(userinfo['chat_id'],"⛔ Нет доступа")
+			return 0
 		if(len(text) < 1):
-			return Methods.send(userinfo['chat_id'],"/qrevoke [bill-id]")
+			Methods.send(userinfo['chat_id'],"/qrevoke [bill-id]")
+			return 0
 		qiwi.revoke_pay(text[0])
 		Methods.send(userinfo['chat_id'],"Revoked")
 
