@@ -6,12 +6,10 @@ from methods import Methods
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
 def job():
-	with open(dir_path+"/holiday-count", "r") as f:
-		hcount = f.readline()
-	hcount = int(hcount)-1
+	hcount = Methods.bd_exec("SELECT `holiday-key-count` FROM vk")['holiday-key-count']
+	hcount = hcount-1
 	response = req.get(f"https://holidays.abstractapi.com/v1/?api_key=fe59d2633e604ceba3973fae09e07f6b&country=RU&year={datetime.datetime.now().year}&month={datetime.datetime.now().month}&day={datetime.datetime.now().day}").json()
-	with open(dir_path+"/holiday-count", "w") as f:
-		f.write(str(hcount))
+	Methods.bd_exec("UPDATE vk SET `holiday-key-count`=`holiday-key-count`-1")
 	result = []
 	i = 1
 	for n in response:

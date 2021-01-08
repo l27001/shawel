@@ -14,7 +14,7 @@ builtins.aerrs = 0
 builtins.timestart = datetime.now()
 
 from config import groupid
-from other import dir_path, api, BL
+from other import dir_path, api
 from commands import Commands
 from methods import Methods
 
@@ -22,8 +22,7 @@ from methods import Methods
 def start():
 	try:
 		procs = []
-		scrname = api.groups.getById(group_id=groupid)[0]
-		builtins.scrname = scrname['screen_name']
+		builtins.scrname = api.groups.getById(group_id=groupid)[0]['screen_name']
 		lp = api.groups.getLongPollServer(group_id=groupid)
 		server = lp['server']
 		key = lp['key']
@@ -65,10 +64,9 @@ def start():
 					with open(dir_path+"/TS", 'w') as f:
 						f.write(ts)
 					for res in response['updates']:
-						if(BL.count(res['object']['message']['from_id']) == 0):
-							t = multiprocessing.Process(target=Commands, name=f"{ts}", args=(res,))
-							t.start()
-							procs.append(t)
+						t = multiprocessing.Process(target=Commands, name=f"{ts}", args=(res,))
+						t.start()
+						procs.append(t)
 			except(VeryError, ConnectTimeout, HTTPError, ReadTimeout, Timeout, ConnectionError):
 				Methods.log("WARN","Сервер не ответил. Жду 3 секунды перед повтором.")
 				time.sleep(3)
