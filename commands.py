@@ -129,7 +129,7 @@ class Commands:
 	def goose(userinfo, text):
 		"""Отправляет гуся"""
 		if(len(text) >= 1):
-			if(text[0] == 'ш'):
+			if(text[0].lower() == 'ш'):
 				Methods.send(userinfo['chat_id'], "", 'doc242730929_570000336')
 			else:
 				Methods.send(userinfo['chat_id'], "", 'doc242730929_570296408')
