@@ -22,7 +22,8 @@ from methods import Methods
 def start():
 	try:
 		procs = []
-		builtins.scrname = api.groups.getById(group_id=groupid)[0]['screen_name']
+		scrname = api.groups.getById(group_id=groupid)[0]
+		builtins.scrname = scrname['screen_name']
 		lp = api.groups.getLongPollServer(group_id=groupid)
 		server = lp['server']
 		key = lp['key']
