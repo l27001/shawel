@@ -59,7 +59,8 @@ class Commands:
 		if('payload' in obj):
 			userinfo.update({'payload':obj['payload']})
 		text = text.split(' ')
-		if(text[0] == f'[club{groupid}|@{scrname}]' or text[0] == f'[public{groupid}|@{scrname}]'):
+		#if(text[0] == f'[club{groupid}|@{scrname}]' or text[0] == f'[public{groupid}|@{scrname}]'):
+		if(re.match(rf"\[(club|public){groupid}\|(@|\*){scrname}\]", text[0])):
 			text.pop(0)
 		if(chat_id > 2000000000 and text[0][0] != '/'):
 			return None
@@ -949,13 +950,14 @@ class Commands:
 		if(userinfo['dostup'] < 2):
 			Methods.send(userinfo['chat_id'],"⛔ Нет доступа")
 			return 0
-		if(len(text) < 2):
+		if(len(text) < 1):
 			Methods.send(userinfo['chat_id'],"/qpay [sum] [comment]")
 			return 0
 		try:
 			summ = int(text[0])
+			if(summ < 1): raise ValueError
 		except ValueError:
-			Methods.send(userinfo['chat_id'],"Сумма должна быть числом!")
+			Methods.send(userinfo['chat_id'],"Сумма должна быть положительным числом!")
 			return 0
 		result = qiwi.create_pay(summ,' '.join(text[1:]))
 		Methods.send(userinfo['chat_id'],f"Ссылка создана.\nID: {result['id']}\nSum: {result['amount']}\nComment: {result['comment']}\n\n{result['url']}")
@@ -968,7 +970,11 @@ class Commands:
 		if(len(text) < 1):
 			Methods.send(userinfo['chat_id'],"/qcheck [bill id]")
 			return 0
-		result = qiwi.check_pay(text[0])
+		try:
+			result = qiwi.check_pay(text[0])
+		except:
+			Methods.send(userinfo['chat_id'], "Что-то пошло не так. Проверьте ID. Если все верно обратитесь к логам.")
+			return 0
 		Methods.send(userinfo['chat_id'],f"Comment: {result['comment']}\nStatus: {result['status']}\nSum: {result['amount']}")
 
 	def qiwi_revoke(userinfo,text):
@@ -979,7 +985,11 @@ class Commands:
 		if(len(text) < 1):
 			Methods.send(userinfo['chat_id'],"/qrevoke [bill-id]")
 			return 0
-		qiwi.revoke_pay(text[0])
+		try:
+			qiwi.revoke_pay(text[0])
+		except:
+			Methods.send(userinfo['chat_id'], "Что-то пошло не так. Проверьте ID. Если все верно обратитесь к логам.")
+			return 0
 		Methods.send(userinfo['chat_id'],"Revoked")
 
 cmds = {'info':Commands.info, 'инфо':Commands.info, 

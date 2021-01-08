@@ -115,6 +115,7 @@ class Methods:
 		except Exception as e:
 			if(e.code == 917):
 				return 917
+
 	def check_name(name):
 		return api.utils.resolveScreenName(screen_name=name)
 
