@@ -14,7 +14,7 @@ builtins.aerrs = 0
 builtins.timestart = datetime.now()
 
 from config import groupid
-from other import dir_path, api, BL
+from other import dir_path, api
 from commands import Commands
 from methods import Methods
 
@@ -22,8 +22,7 @@ from methods import Methods
 def start():
 	try:
 		procs = []
-		scrname = api.groups.getById(group_id=groupid)[0]
-		builtins.scrname = scrname['screen_name']
+		builtins.scrname = api.groups.getById(group_id=groupid)[0]['screen_name']
 		lp = api.groups.getLongPollServer(group_id=groupid)
 		server = lp['server']
 		key = lp['key']
