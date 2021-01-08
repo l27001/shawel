@@ -16,15 +16,6 @@ class Methods:
 		return"{\"color\":\""+color+"\",\"action\":{\"type\":\""+typ+"\","+kk+"}}"
 
 	def construct_keyboard(inline="false",one_time="false",**kwargs):
-		if(inline == True):
-			inline = "true"
-		elif(inline == False):
-			inline = "false"
-		if(one_time == True):
-			one_time = "true"
-		elif(one_time == False):
-			one_time = "false"
-
 		a = []
 		for n in kwargs:
 			a.append("["+kwargs[n]+"]")
