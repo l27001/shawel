@@ -1,6 +1,6 @@
 from os.path import isfile, isdir
 from collections import deque
-import time, datetime, random, re, timeit
+import time, datetime, random, re, timeit, json
 from config import groupid
 from methods import Methods
 from other import dir_path, blackwords
@@ -57,6 +57,17 @@ class Commands:
 						Methods.kick_user(chat_id,from_id)
 					return None
 		if('payload' in obj):
+			try:
+				obj['payload'] = json.loads(obj['payload'])
+				if('command' in obj['payload'] and obj['payload']['command'] == "internal_command"):
+					if(obj['payload']['action']['type'] == "intent_unsubscribe"):
+						Methods.bd_exec(f"UPDATE users SET raspisanie='0' WHERE vkid='{from_id}'")
+						Methods.send(from_id, "Вы отписались от рассылки обновлений расписания.")
+					elif(obj['payload']['action']['type'] == "intent_subscribe"):
+						Methods.bd_exec(f"UPDATE users SET raspisanie='1' WHERE vkid='{from_id}'")
+						Methods.send(from_id, "Вы подписались на рассылку обновлений расписания.")
+					return None
+			except TypeError: pass
 			userinfo.update({'payload':obj['payload']})
 		text = text.split(' ')
 		#if(text[0] == f'[club{groupid}|@{scrname}]' or text[0] == f'[public{groupid}|@{scrname}]'):
@@ -73,7 +84,7 @@ class Commands:
 		try:
 			text[0] = text[0].lower()
 			text[0] = text[0].replace('/','')
-			userinfo.update({'replid':replid,'chat_id':chat_id, 'from_id':from_id, 'date':today.strftime("%H:%M:%S %d.%m.%Y"), 'vk':vk, 'attachments':obj['attachments']})
+			userinfo.update({'replid':replid,'chat_id':chat_id, 'from_id':from_id, 'vk':vk, 'attachments':obj['attachments']})
 			cmds[text[0]](userinfo, text[1:])
 		except (KeyError, IndexError):
 			if(chat_id < 2000000000):
@@ -120,7 +131,7 @@ class Commands:
 
 	def time(userinfo, text):
 		"""Выводит текущее время"""
-		Methods.send(userinfo['chat_id'], "🕒 Текущее серверное время "+userinfo['date']+"\nUnix-time: "+str(int(time.time())))
+		Methods.send(userinfo['chat_id'], "🕒 Текущее серверное время "+datetime.datetime.today().strftime('%Y-%m-%d %H:%M:%S')+"\nUnix-time: "+str(int(time.time())))
 
 	def test(userinfo, text):
 		"""Тест"""
@@ -185,7 +196,7 @@ class Commands:
 				icon = "🌨"
 			elif(icon == '50d' or icon == '50n'):
 				icon = "🌫"
-			Methods.send(userinfo['chat_id'], "Погода в "+weather['name']+"\n├ Местное время: "+datetime.datetime.utcfromtimestamp(weather['dt']+weather['timezone']).strftime('%Y-%m-%d %H:%M:%S')+"\n├ Статус: "+icon+" "+weather['weather'][0]['description']+"\n├ Температура: "+str(weather['main']['temp'])+" °С\n├ Ветер: "+str(weather['wind']['speed'])+" м/c\n├ Влажность: "+str(weather['main']['humidity'])+" %\n└ Давление: "+str(weather['main']['pressure'])+" hPa\nЗапрос сделан в "+userinfo['date']);
+			Methods.send(userinfo['chat_id'], "Погода в "+weather['name']+"\n├ Местное время: "+datetime.datetime.utcfromtimestamp(weather['dt']+weather['timezone']).strftime('%Y-%m-%d %H:%M:%S')+"\n├ Статус: "+icon+" "+weather['weather'][0]['description']+"\n├ Температура: "+str(weather['main']['temp'])+" °С\n├ Ветер: "+str(weather['wind']['speed'])+" м/c\n├ Влажность: "+str(weather['main']['humidity'])+" %\n└ Давление: "+str(weather['main']['pressure'])+" hPa\nЗапрос сделан в "+datetime.datetime.today().strftime('%Y-%m-%d %H:%M:%S'));
 
 	def top(userinfo, text):
 		"""Выводит топ садовников"""
@@ -291,12 +302,17 @@ class Commands:
 	def rass(userinfo, text):
 		"""Подписаться/Отписаться от рассылки актуального расписания"""
 		if(userinfo['chat_id'] == userinfo['from_id']):
-			if(userinfo['raspisanie'] == 1):
-				Methods.bd_exec(f"UPDATE users SET raspisanie='0' WHERE vkid='{userinfo['from_id']}'")
-				Methods.send(userinfo['chat_id'], "Вы отписались от рассылки обновлений расписания.")
+			#if(userinfo['raspisanie'] == 1):
+			#	Methods.bd_exec(f"UPDATE users SET raspisanie='0' WHERE vkid='{userinfo['from_id']}'")
+			#	Methods.send(userinfo['chat_id'], "Вы отписались от рассылки обновлений расписания.")
+			#else:
+			#	Methods.bd_exec(f"UPDATE users SET raspisanie='1' WHERE vkid='{userinfo['from_id']}'")
+			#	Methods.send(userinfo['chat_id'], "Вы подписались на рассылку обновлений расписания.")
+			if(userinfo['raspisanie'] == 0):
+				raspisanie = 'не подписаны'
 			else:
-				Methods.bd_exec(f"UPDATE users SET raspisanie='1' WHERE vkid='{userinfo['from_id']}'")
-				Methods.send(userinfo['chat_id'], "Вы подписались на рассылку обновлений расписания.")
+				raspisanie = 'подписаны'
+			Methods.send(userinfo['chat_id'],f"Вы {raspisanie}",keyboard=Methods.construct_keyboard(b1=Methods.make_button(type="intent_subscribe",peer_id=userinfo['from_id'],intent="non_promo_newsletter",label="Подписаться"),b2=Methods.make_button(type="intent_unsubscribe",peer_id=userinfo['from_id'],intent="non_promo_newsletter",label="Отписаться"),inline="true"))
 		else:
 			count = Methods.bd_exec(f"SELECT COUNT(*) FROM `chats` WHERE id = {userinfo['chat_id']} AND raspisanie=1")['COUNT(*)']
 			if(count != 1):
@@ -413,10 +429,10 @@ class Commands:
 	def help(userinfo, text):
 		"""Помощь"""
 		a = ''
-		lock = ['dlist', 'дедики', 'ddos']
+		lock = ['dlist', 'дедики', 'ddos', 'user_rass']
 		pred = 0
 		for i,n in cmds.items():
-			if(i in lock):
+			if(i in lock or n in lock):
 				continue
 			if(n == pred):
 				continue
@@ -498,8 +514,6 @@ class Commands:
 				Methods.send(userinfo['chat_id'], "⚠ /spam [peer_id] [text]") 
 			i = 0
 			ttext = " ".join(text[1:])
-			if(text[0] == '0'):
-				text[0] = '2000000015'
 			attach = ''
 			if(len(userinfo['attachments']) >= 1):
 				if(userinfo['attachments'][0]['type'] == 'wall'):

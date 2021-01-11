@@ -43,23 +43,23 @@ def job():
 			else:
 				at = at+","+n
 			i+=1
-		rasp = Methods.bd_exec("SELECT vkid FROM users WHERE raspisanie='1'")
+		rasp = Methods.bd_exec("SELECT vkid,raspisanie FROM users WHERE raspisanie>='1'", fetch="all")
 		Methods.bd_exec("UPDATE vk SET rasp='"+at+"'")
 		i = 0
 		txt = 'Новое расписание\nОбнаружено в '+datetime.datetime.today().strftime("%H:%M:%S %d.%m.%Y")
-		while i < len(rasp):
-			a = []
-			r = Methods.bd_exec("SELECT vkid FROM users WHERE raspisanie='1' LIMIT "+str(i)+", 50", fetch="all")
-			for n in r:
-				a.append(str(n['vkid']))
-			a = ",".join(a)
-			Methods.mass_send(peer_ids=a,message=txt,attachment=at)
-			i+=50
+		#while i < len(rasp):
+			#a = []
+			#r = Methods.bd_exec("SELECT vkid FROM users WHERE raspisanie>='1'", fetch="all")
+		for n in rasp:
+			Methods.send(n['vkid'],message=txt,attachment=at,keyboard=Methods.construct_keyboard(b2=Methods.make_button(type="intent_unsubscribe",peer_id=n['vkid'],intent="non_promo_newsletter",label="Отписаться"),inline="true"))
+			if(n['raspisanie'] == 2):
+				Methods.send(n['vkid'],message="Внимание! Вы подписаны на рассылку по старой схеме которая перестанет работать 1 апреля 2021 года (Спасибо, ВКонтакте)\nРекомендуется либо переподписаться, либо отписаться от рассылки с помощью соотвествующих кнопок.",keyboard=Methods.construct_keyboard(b1=Methods.make_button(type="intent_subscribe",peer_id=n['vkid'],intent="non_promo_newsletter",label="Подписаться"),b2=Methods.make_button(type="intent_unsubscribe",peer_id=n['vkid'],intent="non_promo_newsletter",label="Отписаться"),inline="true"))
+			#Methods.mass_send(peer_ids=a,message=txt,attachment=at,intent="non_promo_newsletter")
+			i+=1
 			time.sleep(1)
-
-		rasp = Methods.bd_exec("SELECT id FROM `chats` WHERE raspisanie='1'", fetch="all")
+		rasp = Methods.bd_exec("SELECT COUNT(id) FROM `chats` WHERE raspisanie='1'")
 		i = 0
-		while i < len(rasp):
+		while i < rasp['COUNT(id)']:
 			a = []
 			r = Methods.bd_exec("SELECT id FROM `chats` WHERE raspisanie='1' LIMIT "+str(i)+", 50", fetch="all")
 			for n in r:
