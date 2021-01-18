@@ -13,11 +13,9 @@ def demotiv(text,text2,img1):
 	if(os.path.isdir(dir_path+"/files") == False):
 		os.mkdir(dir_path+"/files")
 	nme = dir_path+'/files/'+str(random.randint(1,655355))+'.jpg'
-	#img11 = dir_path+'/files/TEMP_'+str(random.randint(400000,9999999))+'.jpg'
 	with open(nme, "wb") as out:
 		out.write(p.content)
 	img1 = Image.open(nme)
-	#os.remove(nme)
 	W1,H1 = img1.size
 	W = int(W1/2.7)+W1
 	H = int(H1/1.5)+H1
@@ -25,12 +23,17 @@ def demotiv(text,text2,img1):
 	font = ImageFont.truetype(dir_path+'/11874.ttf', int(round(H/15,0)))
 	font2 = ImageFont.truetype(dir_path+'/11874.ttf', int(round(H/21,0)))
 	wm = ImageFont.truetype(dir_path+'/11874.ttf', int(round(H/80,0)))
-	w,h = font.getsize(text)
-	x = (W-w)/2
-	text_position = (x, H-H/4)
+
+	w1,h1 = font.getsize(text)
 	w,h = font2.getsize(text2)
-	x = (W-w)/2
-	text_position2 = (x, (H-H/4)+n-10)
+	if(w1 > W or w > W):
+		if(w1 > w):
+			W = w1 + w1//20
+		elif(w > w1):
+			W = w + w//20
+	text_position = ((W-w1)/2, H-H/4)
+	text_position2 = ((W-w)/2, (H-H/4)+n-10)
+
 	text_color = (255,255,255)
 	img1 = ImageOps.expand(img1, border=W//150, fill='black')
 	img1 = ImageOps.expand(img1, border=H//300, fill='white')

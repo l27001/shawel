@@ -253,7 +253,7 @@ class Commands:
 					Methods.send(userinfo['chat_id'], f"ТЫЩ! Вы получили новый уровень!\nНовый уровень: {kx1['name']}\nEXP: {userinfo['EXP']+1}", keyboard=keyb)
 		else:
 			t = 300-(timee-userinfo['vk']['time-poliv'])
-			m = int(t/60)
+			m = t//60
 			t = t-m*60
 			tim = str(m)+" минут "+str(t)+" секунд"
 			Methods.send(userinfo['chat_id'], "Поливать Щавеля можно раз в 5 минут!\nОсталось: "+tim)
