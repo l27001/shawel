@@ -17,12 +17,12 @@ def demotiv(text,text2,img1):
 		out.write(p.content)
 	img1 = Image.open(nme)
 	W1,H1 = img1.size
-	W = int(W1/2.7)+W1
-	H = int(H1/1.5)+H1
+	W = int(W1//2.7+W1)
+	H = int(H1//1.5+H1)
 	n = H/10+10
-	font = ImageFont.truetype(dir_path+'/11874.ttf', int(round(H/15,0)))
-	font2 = ImageFont.truetype(dir_path+'/11874.ttf', int(round(H/21,0)))
-	wm = ImageFont.truetype(dir_path+'/11874.ttf', int(round(H/80,0)))
+	font = ImageFont.truetype(dir_path+'/11874.ttf', H//15)
+	font2 = ImageFont.truetype(dir_path+'/11874.ttf', H//21)
+	wm = ImageFont.truetype(dir_path+'/11874.ttf', H//65)
 
 	w1,h1 = font.getsize(text)
 	w,h = font2.getsize(text2)
@@ -31,16 +31,16 @@ def demotiv(text,text2,img1):
 			W = w1 + w1//20
 		elif(w > w1):
 			W = w + w//20
-	text_position = ((W-w1)/2, H-H/4)
-	text_position2 = ((W-w)/2, (H-H/4)+n-10)
+	text_position = ((W-w1)//2, H-H//4)
+	text_position2 = ((W-w)//2, (H-H//4)+n-10)
 
 	text_color = (255,255,255)
 	img1 = ImageOps.expand(img1, border=W//150, fill='black')
 	img1 = ImageOps.expand(img1, border=H//300, fill='white')
 	img = Image.new("RGB",(W,H),color=0)
 	draw = ImageDraw.Draw(img)
-	x = int((W - W1)/2)
-	y = int(H/9)
+	x = int((W - W1)//2)
+	y = int(H//9)
 	waterw,waterh = wm.getsize("Made by @shawelbot")
 	img.paste(img1,(x,y))
 	draw.text(text_position, text, text_color, font)
