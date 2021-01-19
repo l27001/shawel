@@ -56,7 +56,7 @@ def demotiv(text,text2,img1):
 	img.paste(img1,(x,y))
 	draw.text(text_position, text, text_color, font)
 	#draw.text((W-waterw,H-waterh), "Made by @shawelbot", text_color, wm)
-	wm = Image.open(dir_path+"200.png")
+	wm = Image.open(dir_path+"/200.png")
 	wm = wm.resize((razmm//4,razmm//4))
 	wmw,wmh = wm.size
 	draw.text(text_position2, text2, text_color, font2)
