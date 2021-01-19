@@ -62,10 +62,10 @@ class Commands:
 				if('command' in obj['payload'] and obj['payload']['command'] == "internal_command"):
 					if(obj['payload']['action']['type'] == "intent_unsubscribe"):
 						Methods.bd_exec(f"UPDATE users SET raspisanie='0' WHERE vkid='{from_id}'")
-						Methods.send(from_id, "Вы отписались от рассылки обновлений расписания.")
+						Methods.send(from_id, "Вы отписались от рассылки обновлений расписания.", keyboard=Methods.construct_keyboard(b1=Methods.make_button(type="intent_subscribe",peer_id=from_id,intent="non_promo_newsletter",label="Подписаться"),inline="true"))
 					elif(obj['payload']['action']['type'] == "intent_subscribe"):
 						Methods.bd_exec(f"UPDATE users SET raspisanie='1' WHERE vkid='{from_id}'")
-						Methods.send(from_id, "Вы подписались на рассылку обновлений расписания.")
+						Methods.send(from_id, "Вы подписались на рассылку обновлений расписания.", keyboard=Methods.construct_keyboard(b2=Methods.make_button(type="intent_unsubscribe",peer_id=from_id,intent="non_promo_newsletter",label="Отписаться"),inline="true"))
 					return None
 			except TypeError: pass
 			userinfo.update({'payload':obj['payload']})
@@ -312,7 +312,7 @@ class Commands:
 				raspisanie = 'не подписаны'
 			else:
 				raspisanie = 'подписаны'
-			Methods.send(userinfo['chat_id'],f"Вы {raspisanie}",keyboard=Methods.construct_keyboard(b1=Methods.make_button(type="intent_subscribe",peer_id=userinfo['from_id'],intent="non_promo_newsletter",label="Подписаться"),b2=Methods.make_button(type="intent_unsubscribe",peer_id=userinfo['from_id'],intent="non_promo_newsletter",label="Отписаться"),inline="true"))
+			Methods.send(userinfo['chat_id'],f"Вы {raspisanie}", keyboard=Methods.construct_keyboard(b1=Methods.make_button(type="intent_subscribe",peer_id=userinfo['from_id'],intent="non_promo_newsletter",label="Подписаться"),b2=Methods.make_button(type="intent_unsubscribe",peer_id=userinfo['from_id'],intent="non_promo_newsletter",label="Отписаться"),inline="true"))
 		else:
 			count = Methods.bd_exec(f"SELECT COUNT(*) FROM `chats` WHERE id = {userinfo['chat_id']} AND raspisanie=1")['COUNT(*)']
 			if(count != 1):

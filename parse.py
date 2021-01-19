@@ -6,9 +6,11 @@ from methods import Methods
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
 headers = {
-    'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.125 Safari/537.36 OPR/70.0.3728.133'
+    'User-Agent': 'ShawelBot/Parser'
 }
+proxy = "http://shawel:wrwZzhTJC@95.181.152.209:3218"
 def job():
+	#resp = req.get("https://engschool9.ru/content/raspisanie.html", headers=headers, proxies={"http":proxy,"https":proxy})
 	resp = req.get("https://engschool9.ru/content/raspisanie.html", headers=headers)
 	soup = BeautifulSoup(resp.text, 'html.parser')
 	src = soup.find("iframe")['src']
@@ -26,7 +28,8 @@ def job():
 			f.write(src)
 		for n in os.listdir(dir_path+"/parse/files"):
 			os.remove(dir_path+"/parse/files/"+n)
-		p = subprocess.Popen(["wget",src,"-qO",dir_path+"/parse/raspisanie.pdf","--user-agent='Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.125 Safari/537.36 OPR/70.0.3728.133'"])
+		#p = subprocess.Popen(["wget",src,"-qO",dir_path+"/parse/raspisanie.pdf","--user-agent='Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.125 Safari/537.36 OPR/70.0.3728.133'", "-e", "use_proxy=yes", "-e", f"https_proxy={proxy}", "-e", f"http_proxy={proxy}"])
+		p = subprocess.Popen(["wget",src,"-qO",dir_path+"/parse/raspisanie.pdf",f"--user-agent='{headers['User-Agent']}'"])
 		p.wait()
 		p = subprocess.Popen(["pdftoppm",dir_path+"/parse/raspisanie.pdf",dir_path+"/parse/files/out","-png"])
 		p.wait()
