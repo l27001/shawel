@@ -1016,9 +1016,9 @@ class Commands:
     def meme(userinfo, text):
         """Отправляет рандомный мемес из сохраненных"""
         imgs = sorted(listdir(f"{dir_path}/meme"))
-        it = random.randint(1,len(imgs))
+        it = random.randint(1,len(imgs)-1)
         im = Methods.upload_img(userinfo['from_id'], f"{dir_path}/meme/{imgs[it]}")
-        Methods.send(userinfo['chat_id'],attachment=im)
+        Methods.send(userinfo['chat_id'],f"{imgs[it].split('.')[0]}",attachment=im)
 
     def addmeme(userinfo, text):
         """Сохраняет прикрёпленные изображения в качестве мемесов"""
