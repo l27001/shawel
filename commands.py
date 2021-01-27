@@ -1,4 +1,5 @@
 from os.path import isfile, isdir
+from os import listdir, mkdir
 from collections import deque
 import time, datetime, random, re, timeit, json
 from config import groupid
@@ -411,7 +412,7 @@ class Commands:
                 height = 0
                 width = 0
                 for n in userinfo['attachments'][0]['photo']['sizes']:
-                    if(n['height'] > height or n['width'] > height):
+                    if(n['height'] > height or n['width'] > width):
                         height = n['height']
                         width = n['width']
                         url = n['url']
@@ -997,7 +998,7 @@ class Commands:
             return 0
         Methods.send(userinfo['chat_id'],f"Comment: {result['comment']}\nStatus: {result['status']}\nSum: {result['amount']}")
 
-    def qiwi_revoke(userinfo,text):
+    def qiwi_revoke(userinfo, text):
         """"""
         if(userinfo['dostup'] < 2):
             Methods.send(userinfo['chat_id'],"⛔ Нет доступа")
@@ -1011,6 +1012,37 @@ class Commands:
             Methods.send(userinfo['chat_id'], "Что-то пошло не так. Проверьте ID. Если все верно обратитесь к логам.")
             return 0
         Methods.send(userinfo['chat_id'],"Revoked")
+
+    def meme(userinfo, text):
+        """Отправляет рандомный мемес из сохраненных"""
+        imgs = sorted(listdir(f"{dir_path}/meme"))
+        it = random.randint(1,len(imgs))
+        im = Methods.upload_img(userinfo['from_id'], f"{dir_path}/meme/{imgs[it]}")
+        Methods.send(userinfo['chat_id'],attachment=im)
+
+    def addmeme(userinfo, text):
+        """Сохраняет прикрёпленные изображения в качестве мемесов"""
+        if(isdir(f"{dir_path}/meme" == False)):
+            mkdir(f"{dir_path}/meme")
+        k = []
+        for n in userinfo['attachments']:
+            if(n['type'] != 'photo'):
+                Methods.send(userinfo['chat_id'], "Нужна фотография!")
+                return 0
+            height = 0
+            width = 0
+            for n in n['photo']['sizes']:
+                if(n['height'] > height or n['width'] > width):
+                    height = n['height']
+                    width = n['width']
+                    url = n['url']
+            k.append(url)
+        if(k == []):
+            Methods.send(userinfo['chat_id'], "Нужна фотография!")
+            return 0
+        for n in k:
+            Methods.download_img(n,f"{dir_path}/meme/{random.randint(99999,99999999)}.jpg")
+        Methods.send(userinfo['chat_id'],f"Добавлено {len(k)} memes'ов")
 
 cmds = {'info':Commands.info, 'инфо':Commands.info, 
 'рандом':Commands.random, 'random':Commands.random, 
@@ -1049,4 +1081,6 @@ cmds = {'info':Commands.info, 'инфо':Commands.info,
 'python':Commands.python,'питон':Commands.python,'пайтон':Commands.python,
 'games':Commands.switch_game,
 "qpay":Commands.qiwi_create,"qcheck":Commands.qiwi_check,"qrevoke":Commands.qiwi_revoke,
+"meme":Commands.meme,
+"addmeme":Commands.addmeme,
 }
