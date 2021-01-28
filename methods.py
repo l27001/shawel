@@ -1,6 +1,6 @@
-import re, requests, datetime, os, random, timeit
+import re, requests, datetime, os, random, timeit, pymysql, pymysql.cursors
 from other import make_con, api, dir_path, levels
-from config import groupid
+import config
 
 headers = {
     'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.125 Safari/537.36 OPR/70.0.3728.133'
@@ -54,7 +54,13 @@ class Methods:
 	def bd_exec(query,fetch="one",time=False):
 		if(time == True):
 			extime = timeit.default_timer()
-		con = make_con()
+		con = pymysql.connect(host=config.db['host'],
+	        user=config.db['user'],
+	        password=config.db['password'],
+	        db=config.db['database'],
+	        charset='utf8mb4',
+	        autocommit=True,
+	        cursorclass=pymysql.cursors.DictCursor)
 		cur = con.cursor()
 		cur.execute(query)
 		if(fetch == "one"):
@@ -101,11 +107,11 @@ class Methods:
 		return f"doc{file['audio_message']['owner_id']}_{file['audio_message']['id']}_{file['audio_message']['access_key']}"
 
 	def is_message_allowed(id):
-		return api.messages.isMessagesFromGroupAllowed(user_id=id,group_id=groupid)['is_allowed']
+		return api.messages.isMessagesFromGroupAllowed(user_id=id,group_id=config.groupid)['is_allowed']
 
 	def get_conversation_members(peer_id):
 		try:
-			return api.messages.getConversationMembers(group_id=groupid,peer_id=peer_id)['items']
+			return api.messages.getConversationMembers(group_id=config.groupid,peer_id=peer_id)['items']
 		except Exception as e:
 			if(e.code == 917):
 				return 917
@@ -116,11 +122,11 @@ class Methods:
 	def kick_user(chat,name):
 		api.messages.removeChatUser(chat_id=chat-2000000000,member_id=name)
 
-	def del_message(message_ids,delete_for_all=1,group_id=groupid):
-		return api.messages.delete(message_ids=message_ids,delete_for_all=1,group_id=groupid)
+	def del_message(message_ids,delete_for_all=1,group_id=config.groupid):
+		return api.messages.delete(message_ids=message_ids,delete_for_all=1,group_id=config.groupid)
 
-	def set_typing(peer_id,type='typing',group_id=groupid):
-		api.messages.setActivity(group_id=groupid,peer_id=peer_id,type=type)
+	def set_typing(peer_id,type='typing',group_id=config.groupid):
+		api.messages.setActivity(group_id=config.groupid,peer_id=peer_id,type=type)
 
 	def get_level(expa):
 		for name, expp in levels.items():

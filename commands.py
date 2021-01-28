@@ -13,10 +13,9 @@ import qiwi
 class Commands:
 
     def __init__(self, response):
-        if(DEBUG == True):
-            extime = timeit.default_timer()
         today = datetime.datetime.today()
         if(DEBUG == True):
+            extime = timeit.default_timer()
             print(today.strftime("%H:%M:%S %d.%m.%Y")+ ": "+str(response))
         obj = response['object']['message']
         if 'reply_message' in obj:
@@ -1037,12 +1036,16 @@ class Commands:
                     width = n['width']
                     url = n['url']
             k.append(url)
-        if(k == []):
+        if(len(k) == 0):
             Methods.send(userinfo['chat_id'], "Нужна фотография!")
             return 0
         for n in k:
             Methods.download_img(n,f"{dir_path}/meme/{random.randint(99999,99999999)}.jpg")
         Methods.send(userinfo['chat_id'],f"Добавлено {len(k)} memes'ов")
+
+    def zvonki(userinfo, text):
+        """Отправляет расписание звонков"""
+        Methods.send(userinfo['chat_id'],attachment="photo-183256712_457239190")
 
 cmds = {'info':Commands.info, 'инфо':Commands.info, 
 'рандом':Commands.random, 'random':Commands.random, 
@@ -1083,4 +1086,5 @@ cmds = {'info':Commands.info, 'инфо':Commands.info,
 "qpay":Commands.qiwi_create,"qcheck":Commands.qiwi_check,"qrevoke":Commands.qiwi_revoke,
 "meme":Commands.meme,
 "addmeme":Commands.addmeme,
+"звонки":Commands.zvonki,
 }

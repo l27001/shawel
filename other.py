@@ -1,14 +1,8 @@
-import pymysql, pymysql.cursors, vk, os
+import vk, os
 import config
 
 def make_con():
-	return pymysql.connect(host=config.db['host'],
-        user=config.db['user'],
-        password=config.db['password'],
-        db=config.db['database'],
-        charset='utf8mb4',
-        autocommit=True,
-        cursorclass=pymysql.cursors.DictCursor)
+	return 
 session = vk.Session(access_token=config.access_token)
 api = vk.API(session, v='5.124', lang='ru')
 dir_path = os.path.dirname(os.path.realpath(__file__))
