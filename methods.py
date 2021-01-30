@@ -1,5 +1,5 @@
 import re, requests, datetime, os, random, timeit, pymysql, pymysql.cursors
-from other import make_con, api, dir_path, levels
+from other import api, dir_path, levels
 import config
 
 headers = {
@@ -34,7 +34,7 @@ class Methods:
 			os.mkdir(dir_path+"/log")
 		file = dir_path+"/log/"+datetime.datetime.today().strftime("%d.%m.%Y")+".log"
 		if(timestamp == True):
-			message = f"({datetime.datetime.today().strftime('%H:%M:%S %d.%m.%Y')}) [{prefix}] {message}"
+			message = f"({datetime.datetime.today().strftime('%H:%M:%S')}) [{prefix}] {message}"
 		else:
 			message = f"[{prefix}] {message}"
 		print(message)

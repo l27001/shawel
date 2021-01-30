@@ -39,7 +39,7 @@ class Commands:
             Methods.bd_exec(f"INSERT INTO users (`vkid`) VALUES ('{from_id}')")
             userinfo = Methods.bd_exec(f"SELECT * FROM users WHERE vkid='{from_id}' LIMIT 1")
         tlog = text.replace("\n",r" \n ")
-        Methods.log("Message", f"Сообщение: '{tlog}' {who}")
+        Methods.log("Message", f"'{tlog}' {who}")
         if(chat_id != from_id):
             curtime = int(time.time())
             m = Methods.bd_exec(f"SELECT * FROM mute WHERE vkid = {from_id} AND chatid = {chat_id}")
