@@ -451,7 +451,7 @@ class Commands:
     def status(userinfo, text):
         """Статус"""
         a = []
-        response = Methods.uptime().json()
+        response = Methods.uptime()
         for i in response['monitors']:
             if(i['status'] == 8):
                 i['status'] = '⚠ Кажется недоступен'

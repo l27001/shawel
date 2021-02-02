@@ -8,7 +8,6 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 headers = {
     'User-Agent': 'ShawelBot/Parser'
 }
-proxy = "http://shawel:wrwZzhTJC@95.181.152.209:3218"
 def job():
 	#resp = req.get("https://engschool9.ru/content/raspisanie.html", headers=headers, proxies={"http":proxy,"https":proxy})
 	resp = req.get("https://engschool9.ru/content/raspisanie.html", headers=headers)
@@ -34,6 +33,8 @@ def job():
 		p = subprocess.Popen(["pdftoppm",dir_path+"/parse/raspisanie.pdf",dir_path+"/parse/files/out","-png"])
 		p.wait()
 		p = subprocess.Popen(["python3",f"{dir_path}/parse/check.py"])
+		p.wait()
+		p = subprocess.Popen(["python3",f"{dir_path}/parse/wm.py"])
 		p.wait()
 		attach = []
 		for n in sorted(os.listdir(dir_path+"/parse/files")):

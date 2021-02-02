@@ -27,7 +27,7 @@ class Methods:
 		return re.sub(r"[']",'',kx)
 
 	def uptime():
-		return requests.post('https://api.uptimerobot.com/v2/getMonitors', json={"api_key":"ur1048433-f7ea5b960f4eb0177d8cd42f"})
+		return requests.post('https://api.uptimerobot.com/v2/getMonitors', json={"api_key":"ur1048433-f7ea5b960f4eb0177d8cd42f"}).json()
 
 	def log(prefix,message,timestamp=True):
 		if(os.path.isdir(dir_path+"/log/") == False):
