@@ -3,7 +3,7 @@ from PIL import Image
 import os, requests, random
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
-def zerkalo(file):
+def zerkalo(file, typ=1):
     p = requests.get(file)
     if(os.path.isdir(dir_path+"/files") == False):
         os.mkdir(dir_path+"/files")
@@ -14,15 +14,19 @@ def zerkalo(file):
     w,h = (0,0)
     W,H = im.size
     half = W//2
-    out = []
-    while h < H:
-        w = 0
-        while w < W:
-            if(w > half):
-                pixel = (im.getpixel((half-(w-half),h)))
-                im.putpixel((w,h), pixel)
-            w+=1
-        h+=1
+    obj = im.load()
+    if(typ == 1):
+        k = half
+        for n in range(half,W):
+            for x in range(0,H):
+                obj[n,x] = obj[k,x]
+            k-=1
+    else:
+        k = W-1
+        for n in range(0,half):
+            for x in range(0,H):
+                obj[n,x] = obj[k,x]
+            k-=1
 
     im.save(nme)
     return nme

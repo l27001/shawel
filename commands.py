@@ -1051,6 +1051,10 @@ class Commands:
     def zerkalo(userinfo, text):
         """Отзеркаливает изображение"""
         k = []
+        typ = 1
+        if(len(text) > 0):
+            if(text[0] == "1"):
+                typ = 2
         for n in userinfo['attachments']:
             if(n['type'] != 'photo'):
                 Methods.send(userinfo['chat_id'], "Нужна фотография!")
@@ -1068,7 +1072,7 @@ class Commands:
             return 0
         out = []
         for n in k:
-            out.append(Methods.upload_img(userinfo['from_id'], zerkalo(n)))
+            out.append(Methods.upload_img(userinfo['from_id'], zerkalo(n, typ)))
         Methods.send(userinfo['chat_id'], attachment=out)
 
 cmds = {'info':Commands.info, 'инфо':Commands.info, 
