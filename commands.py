@@ -9,6 +9,7 @@ from demotivator.demotiv import demotiv
 from gdz.gdz import gdz as get_gdz
 from voice.voice import mk_voice
 import qiwi
+from zerkalo.zerkalo import zerkalo
 
 class Commands:
 
@@ -1047,6 +1048,29 @@ class Commands:
         """Отправляет расписание звонков"""
         Methods.send(userinfo['chat_id'],attachment="photo-183256712_457239190")
 
+    def zerkalo(userinfo, text):
+        """Отзеркаливает изображение"""
+        k = []
+        for n in userinfo['attachments']:
+            if(n['type'] != 'photo'):
+                Methods.send(userinfo['chat_id'], "Нужна фотография!")
+                return 0
+            height = 0
+            width = 0
+            for n in n['photo']['sizes']:
+                if(n['height'] > height or n['width'] > width):
+                    height = n['height']
+                    width = n['width']
+                    url = n['url']
+            k.append(url)
+        if(len(k) == 0):
+            Methods.send(userinfo['chat_id'], "Нужна фотография!")
+            return 0
+        out = []
+        for n in k:
+            out.append(Methods.upload_img(userinfo['from_id'], zerkalo(n)))
+        Methods.send(userinfo['chat_id'], attachment=out)
+
 cmds = {'info':Commands.info, 'инфо':Commands.info, 
 'рандом':Commands.random, 'random':Commands.random, 
 'goose':Commands.goose, 'гусь':Commands.goose, 
@@ -1087,4 +1111,5 @@ cmds = {'info':Commands.info, 'инфо':Commands.info,
 "meme":Commands.meme,
 "addmeme":Commands.addmeme,
 "звонки":Commands.zvonki,
+"зеркало":Commands.zerkalo,"зер":Commands.zerkalo,
 }
