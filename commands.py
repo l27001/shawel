@@ -10,6 +10,7 @@ from gdz.gdz import gdz as get_gdz
 from voice.voice import mk_voice
 import qiwi
 from zerkalo.zerkalo import zerkalo
+from text.text import text as mk_text
 
 class Commands:
 
@@ -198,7 +199,7 @@ class Commands:
                 icon = "🌨"
             elif(icon == '50d' or icon == '50n'):
                 icon = "🌫"
-            Methods.send(userinfo['chat_id'], "Погода в "+weather['name']+"\n├ Местное время: "+datetime.datetime.utcfromtimestamp(weather['dt']+weather['timezone']).strftime('%Y-%m-%d %H:%M:%S')+"\n├ Статус: "+icon+" "+weather['weather'][0]['description']+"\n├ Температура: "+str(weather['main']['temp'])+" °С\n├ Ветер: "+str(weather['wind']['speed'])+" м/c\n├ Влажность: "+str(weather['main']['humidity'])+" %\n└ Давление: "+str(weather['main']['pressure'])+" hPa\nЗапрос сделан в "+datetime.datetime.today().strftime('%Y-%m-%d %H:%M:%S'));
+            Methods.send(userinfo['chat_id'], "Погода в "+weather['name']+"\n├ Местное время: "+datetime.datetime.utcfromtimestamp(weather['dt']+weather['timezone']).strftime('%Y-%m-%d %H:%M:%S')+"\n├ Статус: "+icon+" "+weather['weather'][0]['description']+"\n├ Температура: "+str(weather['main']['temp'])+" °С\n├ Ветер: "+str(weather['wind']['speed'])+" м/c\n├ Влажность: "+str(weather['main']['humidity'])+" %\n└ Давление: "+str(weather['main']['pressure']*100)+" Pa\nЗапрос сделан в "+datetime.datetime.today().strftime('%Y-%m-%d %H:%M:%S'));
 
     def top(userinfo, text):
         """Выводит топ садовников"""
@@ -1075,6 +1076,32 @@ class Commands:
             out.append(Methods.upload_img(userinfo['from_id'], zerkalo(n, typ)))
         Methods.send(userinfo['chat_id'], attachment=out)
 
+    def text(userinfo, text):
+        """Вставляет текст внизу изображения"""
+        if(len(text) == 0):
+            Methods.send(userinfo['chat_id'], "/text [текст]\nНеобходима фотография")
+        text = " ".join(text)
+        k = []
+        for n in userinfo['attachments']:
+            if(n['type'] != 'photo'):
+                Methods.send(userinfo['chat_id'], "Нужна фотография!")
+                return 0
+            height = 0
+            width = 0
+            for n in n['photo']['sizes']:
+                if(n['height'] > height or n['width'] > width):
+                    height = n['height']
+                    width = n['width']
+                    url = n['url']
+            k.append(url)
+        if(len(k) == 0):
+            Methods.send(userinfo['chat_id'], "Нужна фотография!")
+            return 0
+        out = []
+        for n in k:
+            out.append(Methods.upload_img(userinfo['from_id'], mk_text(n, text)))
+        Methods.send(userinfo['chat_id'], attachment=out)
+
 cmds = {'info':Commands.info, 'инфо':Commands.info, 
 'рандом':Commands.random, 'random':Commands.random, 
 'goose':Commands.goose, 'гусь':Commands.goose, 
@@ -1116,4 +1143,5 @@ cmds = {'info':Commands.info, 'инфо':Commands.info,
 "addmeme":Commands.addmeme,
 "звонки":Commands.zvonki,
 "зеркало":Commands.zerkalo,"зер":Commands.zerkalo,
+"text":Commands.text,"текст":Commands.text,
 }
