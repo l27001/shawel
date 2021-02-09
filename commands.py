@@ -137,7 +137,7 @@ class Commands:
 
     def test(userinfo, text):
         """Тест"""
-        Methods.send(userinfo['chat_id'], f"{scrname} by @l27001\nВыполнено команд: {acmds}\nОшибок при выполнении команд: {aerrs}\nDebug: {DEBUG}\nЗапущен: {timestart.strftime('%Y-%m-%d %H:%M:%S')}\nВремя работы: {datetime.datetime.now()-timestart}")
+        Methods.send(userinfo['chat_id'], f"{scrname} by @l27001\nВыполнено команд: {acmds}\nОшибок при выполнении команд: {aerrs}\nDebug: {DEBUG}\nЗапущен: {timestart.strftime('%Y-%m-%d %H:%M:%S')}\nВремя работы: {datetime.datetime.now()-timestart}", disable_mentions=1)
 
     def goose(userinfo, text):
         """Отправляет гуся"""
