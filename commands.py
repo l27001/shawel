@@ -265,7 +265,7 @@ class Commands:
     def raspisanie(userinfo, text):
         """Присылает последнее расписание"""
         rasp = Methods.bd_exec("SELECT rasp FROM vk")['rasp']
-        Methods.send(userinfo['chat_id'], "Последнее расписание:", rasp)
+        Methods.send(userinfo['chat_id'], "https://shawel.ezdomain.ru\n\nПоследнее расписание:", rasp)
         #Methods.send(userinfo['chat_id'], "Какое расписание? Каникулы...")
 
     def send(userinfo, text):

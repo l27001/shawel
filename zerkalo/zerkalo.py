@@ -28,5 +28,18 @@ def zerkalo(file, typ=1):
                 obj[n,x] = obj[k,x]
             k-=1
 
+    W,H = im.size
+    if(W > H):
+        razm = W
+        razmm = H
+    else:
+        razm = H
+        razmm = W
+
+    wm = Image.open(dir_path+"/../demotivator/200.png")
+    wm = wm.resize((razmm//4,razmm//4))
+    wmw,wmh = wm.size
+    im.paste(wm,(W-wmw,H-wmh),wm)
+
     im.save(nme)
     return nme
