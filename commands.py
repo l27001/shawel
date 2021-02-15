@@ -314,10 +314,9 @@ class Commands:
             #   Methods.bd_exec(f"UPDATE users SET raspisanie='1' WHERE vkid='{userinfo['from_id']}'")
             #   Methods.send(userinfo['chat_id'], "Вы подписались на рассылку обновлений расписания.")
             if(userinfo['raspisanie'] == 0):
-                raspisanie = 'не подписаны'
+                Methods.send(userinfo['chat_id'],"Вы не подписаны", keyboard=Methods.construct_keyboard(b1=Methods.make_button(type="intent_subscribe",peer_id=userinfo['from_id'],intent="non_promo_newsletter",label="Подписаться"),inline="true"))
             else:
-                raspisanie = 'подписаны'
-            Methods.send(userinfo['chat_id'],f"Вы {raspisanie}", keyboard=Methods.construct_keyboard(b1=Methods.make_button(type="intent_subscribe",peer_id=userinfo['from_id'],intent="non_promo_newsletter",label="Подписаться"),b2=Methods.make_button(type="intent_unsubscribe",peer_id=userinfo['from_id'],intent="non_promo_newsletter",label="Отписаться"),inline="true"))
+                Methods.send(userinfo['chat_id'],"Вы подписаны", keyboard=Methods.construct_keyboard(b2=Methods.make_button(type="intent_unsubscribe",peer_id=userinfo['from_id'],intent="non_promo_newsletter",label="Отписаться"),inline="true"))
         else:
             count = Methods.bd_exec(f"SELECT COUNT(*) FROM `chats` WHERE id = {userinfo['chat_id']} AND raspisanie=1")['COUNT(*)']
             if(count != 1):
