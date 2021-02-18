@@ -46,5 +46,11 @@ def text(file, text):
         text_position = (W//2-w1//2,H-h1-razm//25)
         draw.text((text_position[0],text_position[1]-(razm//20)*k), n, (255,255,255), font)
         k-=1
+
+    wm = Image.open(dir_path+"/../demotivator/200.png")
+    wm = wm.resize((razmm//4,razmm//4))
+    wmw,wmh = wm.size
+    im.paste(wm,(W-wmw,H-wmh),wm)
+
     im.save(nme)
     return nme
