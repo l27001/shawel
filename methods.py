@@ -86,6 +86,8 @@ class Methods:
 		no = requests.post(srvv, files={
 					'file': open(file, 'rb')
 				}).json()
+		if(no['photo'] == '[]'):
+			return 1
 		response = api.photos.saveMessagesPhoto(photo=no['photo'],server=no['server'],hash=no['hash'])
 		return f"photo{response[0]['owner_id']}_{response[0]['id']}_{response[0]['access_key']}"
 
