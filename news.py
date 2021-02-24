@@ -47,7 +47,7 @@ def job():
         else:
             attach = ''
         link = obj.find("a", class_="oneNewsMore")
-        Methods.send(331465308, text+"\n\nhttps://engschool9.ru"+link['href'], attachment=attach)
+        Methods.mass_send([331465308, 2000000016], text+"\n\nhttps://engschool9.ru"+link['href'], attachment=attach)
 
 schedule.every().hour.at(":00").do(job)
 schedule.every().hour.at(":30").do(job)
@@ -61,7 +61,7 @@ def run():
         exit()
     except Exception as e:
         Methods.log("Parser2-ERROR", f"Произошла ошибка.\n\n{e}")
-        Methods.mass_send([331465308, 2000000016], f"С парсером #2 что-то не так!\n\n{e}")
+        Methods.send(331465308, f"С парсером #2 что-то не так!\n\n{e}")
 
 if(__name__ == '__main__'):
-    job()
+    run()
