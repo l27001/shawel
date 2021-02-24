@@ -35,6 +35,7 @@ def start():
 		sub = []
 		sub.append(subprocess.Popen(["python3",dir_path+"/unpoliv.py"]))
 		sub.append(subprocess.Popen(["python3",dir_path+"/parse.py"]))
+		sub.append(subprocess.Popen(["python3",dir_path+"/news.py"]))
 		#sub.append(subprocess.Popen(["python3",dir_path+"/holidays.py"]))
 		Methods.log("INFO",f"{scrname['name']} успешно запущен.")
 		while True:

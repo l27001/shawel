@@ -90,7 +90,7 @@ def run():
         exit()
     except Exception as e:
         Methods.log("Parser-ERROR", f"Произошла ошибка.\n\n{e}")
-        Methods.send(331465308,f"С парсером что-то не так!\n\n{e}")
+        Methods.send(331465308, f"С парсером что-то не так!\n\n{e}")
 
 if(__name__ == '__main__'):
     run()
