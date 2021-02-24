@@ -36,7 +36,10 @@ def job():
     except FileNotFoundError:
         res = ''
     Ans = text.split(" ")
-    if(date != res and len(list(set(Ans) & set(Word))) > 0):
+    new = []
+    for k in Ans:
+        new.append(k.lower)
+    if(date != res and len(list(set(new) & set(Word))) > 0):
         with open(dir_path+'/news/result.txt','w') as f:
            f.write(date)
         if(img != None):
