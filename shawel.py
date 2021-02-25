@@ -6,6 +6,8 @@ from requests import ReadTimeout, ConnectTimeout, HTTPError, Timeout, Connection
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-d','--debug', action='store_true', help="enable debug mode")
+parser.add_argument('--disable-rasp-parser', action='store_true', help="disables rasp parser")
+parser.add_argument('--disable-news-parser', action='store_true', help="disables news parser")
 args = parser.parse_args()
 import builtins
 builtins.DEBUG = args.debug
@@ -34,8 +36,10 @@ def start():
 			ts = lp['ts']
 		sub = []
 		sub.append(subprocess.Popen(["python3",dir_path+"/unpoliv.py"]))
-		sub.append(subprocess.Popen(["python3",dir_path+"/parse.py"]))
-		sub.append(subprocess.Popen(["python3",dir_path+"/news.py"]))
+		if(args.disable_rasp_parser != True):
+			sub.append(subprocess.Popen(["python3",dir_path+"/parse.py"]))
+		if(args.disable_news_parser != True):
+			sub.append(subprocess.Popen(["python3",dir_path+"/news.py"]))
 		#sub.append(subprocess.Popen(["python3",dir_path+"/holidays.py"]))
 		Methods.log("INFO",f"{scrname['name']} успешно запущен.")
 		while True:
