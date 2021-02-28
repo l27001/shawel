@@ -56,15 +56,15 @@ schedule.every().hour.at(":00").do(job)
 schedule.every().hour.at(":30").do(job)
 
 def run():
-    try:
-        while True:
+    while True:
+        try:
             schedule.run_pending()
             time.sleep(1)
-    except KeyboardInterrupt:
-        exit()
-    except Exception as e:
-        Methods.log("Parser2-ERROR", f"Произошла ошибка.\n\n{e}")
-        Methods.send(331465308, f"С парсером #2 что-то не так!\n\n{e}")
+        except KeyboardInterrupt:
+            exit()
+        except Exception as e:
+            Methods.log("Parser2-ERROR", f"Произошла ошибка.\n\n{e}")
+            Methods.send(331465308, f"С парсером #2 что-то не так!\n\n{e}")
 
 if(__name__ == '__main__'):
     run()
