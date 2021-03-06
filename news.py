@@ -39,6 +39,8 @@ def job():
     new = []
     for k in Ans:
         new.append(k.lower)
+    print(date,res)
+    print(list(set(new) & set(Word)))
     if(date != res and len(list(set(new) & set(Word))) > 0):
         with open(dir_path+'/news/result.txt','w') as f:
            f.write(date)

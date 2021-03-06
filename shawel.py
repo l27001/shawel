@@ -40,6 +40,7 @@ def start():
 			sub.append(subprocess.Popen(["python3",dir_path+"/parse.py"]))
 		if(args.disable_news_parser != True):
 			sub.append(subprocess.Popen(["python3",dir_path+"/news.py"]))
+		sub.append(subprocess.Popen(["python3",dir_path+"/uptime_parse.py"]))
 		Methods.log("INFO",f"{scrname['name']} успешно запущен.")
 		while True:
 			try:

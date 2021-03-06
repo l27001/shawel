@@ -88,9 +88,10 @@ class Commands:
             text[0] = text[0].replace('/','')
             userinfo.update({'replid':replid,'chat_id':chat_id, 'from_id':from_id, 'attachments':obj['attachments']})
             cmds[text[0]](userinfo, text[1:])
-        except (KeyError, IndexError):
-            if(chat_id < 2000000000):
-                Methods.send(chat_id, "👎🏻 Не понял.")
+            if(text[0] not in cmds):
+                if(chat_id < 2000000000):
+                    Methods.send(chat_id, "👎🏻 Не понял.")
+                return None
         except Exception as e:
             Methods.log("ERROR", f"Непредвиденная ошибка. {str(e)}")
             Methods.send(chat_id, "⚠ Произошла непредвиденная ошибка.\nОбратитесь к @l27001", attachment="photo-183256712_457239188")
