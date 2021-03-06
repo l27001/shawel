@@ -18,6 +18,8 @@ def demotiv(text,text2,img1):
 		out.write(p.content)
 	img1 = Image.open(nme)
 	W1,H1 = img1.size
+	if(W1 < 100 or H1 < 100):
+		return nme
 	W = int(W1//2.7+W1)
 	H = int(H1//1.5+H1)
 	if(W > H):
