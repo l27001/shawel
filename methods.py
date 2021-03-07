@@ -51,7 +51,7 @@ class Methods:
 		resp = requests.get("https://api.openweathermap.org/data/2.5/weather?q="+location+"&appid=09ade3caac75957b990e25f6bb27b3f9&lang=ru&units=metric")
 		return resp.json()
 
-	def bd_exec(query,fetch="one",time=False):
+	def mysql_query(query,fetch="one",time=False):
 		if(time == True):
 			extime = timeit.default_timer()
 		con = pymysql.connect(host=config.db['host'],
