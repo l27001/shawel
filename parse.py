@@ -63,9 +63,6 @@ def job():
         rasp = Methods.mysql_query("SELECT vkid,raspisanie FROM users WHERE raspisanie>='1'", fetch="all")
         Methods.mysql_query("UPDATE vk SET rasp='"+at+"'")
         i = 0
-        #while i < len(rasp):
-            #a = []
-            #r = Methods.mysql_query("SELECT vkid FROM users WHERE raspisanie>='1'", fetch="all")
         for n in rasp:
             Methods.send(n['vkid'],message=txt,attachment=at,keyboard=Methods.construct_keyboard(b2=Methods.make_button(type="intent_unsubscribe",peer_id=n['vkid'],intent="non_promo_newsletter",label="Отписаться"),inline="true"),intent="non_promo_newsletter")
             i+=1

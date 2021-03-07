@@ -2,13 +2,11 @@
 import requests
 from time import sleep
 from methods import Methods
+from config import uptimerobot_api
 
 def job():
-    res = requests.post('https://api.uptimerobot.com/v2/getMonitors?format=json', json={"api_key":"ur1048433-f7ea5b960f4eb0177d8cd42f"}).json()
-    # print(res)
+    res = requests.post('https://api.uptimerobot.com/v2/getMonitors?format=json', json={"api_key":uptimerobot_api}).json()
     monitors = res['monitors']
-    # upbd = Methods.mysql_query("SELECT * FROM uptime")
-    # print(upbd)
     stat = []
     for k in monitors:
         data = Methods.mysql_query(f"SELECT * FROM uptime WHERE id='{k['id']}'")

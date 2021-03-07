@@ -35,7 +35,6 @@ class Commands:
             who = f"от {userr}[{str(from_id)}]"
         else:
             who = f"в {str(chat_id)} от {userr}[{str(from_id)}]"
-        #vk = Methods.mysql_query("SELECT * FROM vk LIMIT 1")
         userinfo = Methods.mysql_query("SELECT * FROM users WHERE vkid='"+str(from_id)+"' LIMIT 1")
         if(userinfo == None):
             Methods.mysql_query(f"INSERT INTO users (`vkid`) VALUES ('{from_id}')")
@@ -72,7 +71,6 @@ class Commands:
             except TypeError: pass
             userinfo.update({'payload':obj['payload']})
         text = text.split(' ')
-        #if(text[0] == f'[club{groupid}|@{scrname}]' or text[0] == f'[public{groupid}|@{scrname}]'):
         if(re.match(rf"\[(club|public){groupid}\|(@|\*){scrname}\]", text[0])):
             text.pop(0)
         if(chat_id > 2000000000 and text[0][0] != '/'):
@@ -247,9 +245,6 @@ class Commands:
                 if(vl+bd_inf['vlaga'] == 100):
                     Methods.send(userinfo['chat_id'],"Влага достигла 100%. Вы получаете +10 бонусных EXP.")
                     Methods.mysql_query(f"UPDATE users SET EXP=EXP+10 WHERE vkid='{userinfo['from_id']}'")
-                #if(userinfo['EXP']+1 >= 100):
-                #   cur.execute("UPDATE users SET EXP='0' WHERE vkid='"+str(userinfo['from_id'])+"' LIMIT 1")
-                #   Methods.send(userinfo['chat_id'], "ТЫЩ!\nВы набрали 100 EXP! Все EXP были обнулены.", '')
                 i = 0
                 kx = Methods.get_level(userinfo['EXP'])
                 kx1 = Methods.get_level(userinfo['EXP']+1)
@@ -308,12 +303,6 @@ class Commands:
     def rass(userinfo, text):
         """Подписаться/Отписаться от рассылки актуального расписания"""
         if(userinfo['chat_id'] == userinfo['from_id']):
-            #if(userinfo['raspisanie'] == 1):
-            #   Methods.mysql_query(f"UPDATE users SET raspisanie='0' WHERE vkid='{userinfo['from_id']}'")
-            #   Methods.send(userinfo['chat_id'], "Вы отписались от рассылки обновлений расписания.")
-            #else:
-            #   Methods.mysql_query(f"UPDATE users SET raspisanie='1' WHERE vkid='{userinfo['from_id']}'")
-            #   Methods.send(userinfo['chat_id'], "Вы подписались на рассылку обновлений расписания.")
             if(userinfo['raspisanie'] == 0):
                 Methods.send(userinfo['chat_id'],"Вы не подписаны", keyboard=Methods.construct_keyboard(b1=Methods.make_button(type="intent_subscribe",peer_id=userinfo['from_id'],intent="non_promo_newsletter",label="Подписаться"),inline="true"))
             else:
