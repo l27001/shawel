@@ -8,6 +8,7 @@ def job():
     res = requests.post('https://api.uptimerobot.com/v2/getMonitors?format=json', json={"api_key":uptimerobot_api}).json()
     monitors = res['monitors']
     stat = []
+    allu = Methods.mysql_query("SELECT * FROM uptime", "all")
     for k in monitors:
         data = Methods.mysql_query(f"SELECT * FROM uptime WHERE id='{k['id']}'")
         if(data == None):
@@ -22,6 +23,15 @@ def job():
                 stat.append(f"❓ {k['friendly_name']} Приостановлен")
             elif(k['status'] == 2):
                 stat.append(f"✅ {k['friendly_name']} Доступен")
+        i=0
+        for m in allu:
+            if(m['id'] == k['id']):
+                del(allu[i])
+                break
+            i+=1
+    for m in allu:
+        Methods.mysql_query(f"DELETE FROM uptime WHERE id='{m['id']}'")
+        stat.append(f"{m['id']} удалён!")
     text = "\n".join(stat)
     if(len(text) > 0):
         Methods.send(331465308, text)
