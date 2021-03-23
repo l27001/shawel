@@ -439,23 +439,40 @@ class Commands:
             a = a +"\n/"+i+" - "+doc
         Methods.send(userinfo['chat_id'], a)
 
+    # def status(userinfo, text):
+    #     """Статус"""
+    #     a = []
+    #     response = Methods.uptime()
+    #     for i in response['monitors']:
+    #         if(i['status'] == 8):
+    #             i['status'] = '⚠ Кажется недоступен'
+    #         elif(i['status'] == 9):
+    #             i['status'] = '🔴 Недоступен'
+    #         else:
+    #             continue
+    #         a.append(i['friendly_name']+" -> "+i['status'])
+    #     if(len(a) > 0):
+    #         a = "\n".join(a)
+    #         Methods.send(userinfo['chat_id'], a+"\n\nhttps://status.ezdomain.ru/")
+    #     else:
+    #         Methods.send(userinfo['chat_id'], "✔ Все в порядке.\n\nhttps://status.ezdomain.ru/")
+
     def status(userinfo, text):
         """Статус"""
-        a = []
-        response = Methods.uptime()
-        for i in response['monitors']:
-            if(i['status'] == 8):
-                i['status'] = '⚠ Кажется недоступен'
-            elif(i['status'] == 9):
-                i['status'] = '🔴 Недоступен'
-            else:
-                continue
-            a.append(i['friendly_name']+" -> "+i['status'])
-        if(len(a) > 0):
-            a = "\n".join(a)
-            Methods.send(userinfo['chat_id'], a+"\n\nhttps://status.ezdomain.ru/")
-        else:
+        response = Methods.mysql_query("SELECT * FROM uptime WHERE status != '2'", fetch="all")
+        if(response == ()):
             Methods.send(userinfo['chat_id'], "✔ Все в порядке.\n\nhttps://status.ezdomain.ru/")
+        else:
+            out = []
+            for i in response:
+                if(i['status'] == 9 or i['status'] == 8):
+                    out.append(f"⚠ {i['friendly_name']} Недоступен!")
+                elif(i['status'] == 0):
+                    out.append(f"❓ {i['friendly_name']} Приостановлен")
+                else:
+                    out.append(f"❓ {i['friendly_name']} -> {i['status']}")
+            Methods.send(userinfo['chat_id'], "\n".join(out)+"\n\nhttps://status.ezdomain.ru/")
+
 
     def aEXP(userinfo, text):
         """"""

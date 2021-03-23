@@ -3,7 +3,7 @@ from other import api, dir_path, levels
 import config
 
 headers = {
-    'User-Agent': "ShawelBot/Parser" # 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.125 Safari/537.36 OPR/70.0.3728.133'
+    'User-Agent': "ShawelBot/Methods" # 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.125 Safari/537.36 OPR/70.0.3728.133'
 }
 
 class Methods:

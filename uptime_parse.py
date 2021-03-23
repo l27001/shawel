@@ -12,7 +12,7 @@ def check_status(status, name):
     elif(status == 2):
         return f"✅ {name} Доступен"
     else:
-        return f"❓ {kname} -> {status}"
+        return f"❓ {name} -> {status}"
 
 
 def job():
