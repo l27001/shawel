@@ -48,4 +48,4 @@ while True:
     except Exception as e:
         Methods.log("UptimeParser-ERROR", f"Произошла ошибка.\n\n{e}")
         Methods.send(331465308, f"С uptime-парсером что-то не так!\n\n{e}")
-        exit()
+        sleep(300)

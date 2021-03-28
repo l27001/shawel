@@ -439,24 +439,6 @@ class Commands:
             a = a +"\n/"+i+" - "+doc
         Methods.send(userinfo['chat_id'], a)
 
-    # def status(userinfo, text):
-    #     """Статус"""
-    #     a = []
-    #     response = Methods.uptime()
-    #     for i in response['monitors']:
-    #         if(i['status'] == 8):
-    #             i['status'] = '⚠ Кажется недоступен'
-    #         elif(i['status'] == 9):
-    #             i['status'] = '🔴 Недоступен'
-    #         else:
-    #             continue
-    #         a.append(i['friendly_name']+" -> "+i['status'])
-    #     if(len(a) > 0):
-    #         a = "\n".join(a)
-    #         Methods.send(userinfo['chat_id'], a+"\n\nhttps://status.ezdomain.ru/")
-    #     else:
-    #         Methods.send(userinfo['chat_id'], "✔ Все в порядке.\n\nhttps://status.ezdomain.ru/")
-
     def status(userinfo, text):
         """Статус"""
         response = Methods.mysql_query("SELECT * FROM uptime WHERE status != '2'", fetch="all")

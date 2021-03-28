@@ -65,6 +65,7 @@ def run():
         except Exception as e:
             Methods.log("Parser2-ERROR", f"Произошла ошибка.\n\n{e}")
             Methods.send(331465308, f"С парсером #2 что-то не так!\n\n{e}")
+            time.sleep(60)
 
 if(__name__ == '__main__'):
     run()
