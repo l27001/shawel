@@ -4,6 +4,7 @@ import requests as req
 import subprocess,time,os,datetime,schedule
 from methods import Methods
 dir_path = os.path.dirname(os.path.realpath(__file__))
+anotify = None
 
 headers = {
     'User-Agent': 'ShawelBot/Parser'
@@ -74,6 +75,7 @@ def job():
         time.sleep(60)
     else:
         Methods.log("Parser", "Новое расписание не было обнаружено.")
+    anotify = None
 
 schedule.every().hour.at(":00").do(job)
 schedule.every().hour.at(":30").do(job)
@@ -86,8 +88,10 @@ def run():
         except KeyboardInterrupt:
             exit()
         except Exception as e:
-            Methods.log("Parser-ERROR", f"Произошла ошибка.\n\n{e}")
-            Methods.send(331465308, f"С парсером что-то не так!\n\n{e}")
+            if(anotify != e):
+                anotify = e
+                Methods.log("Parser-ERROR", f"Произошла ошибка.\n\n{e}")
+                Methods.send(331465308, f"С парсером что-то не так!\n\n{e}")
             time.sleep(60)
 
 if(__name__ == '__main__'):

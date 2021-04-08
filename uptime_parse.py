@@ -3,6 +3,7 @@ import requests
 from time import sleep
 from methods import Methods
 from config import uptimerobot_api
+anotify = None
 
 def check_status(status, name):
     if(status == 9 or status == 8):
@@ -26,8 +27,9 @@ def job():
     for k in monitors:
         data = Methods.mysql_query(f"SELECT * FROM uptime WHERE id='{k['id']}'")
         if(data == None):
-            Methods.mysql_query(f"INSERT INTO uptime (`id`,`status`) VALUES ('{k['id']}','{k['status']}')")
+            Methods.mysql_query(f"INSERT INTO uptime (`id`,`friendly_name`,`status`) VALUES ('{k['id']}','{k['friendly_name']}','{k['status']}')")
             stat.append(check_status(k['status'], k['friendly_name']))
+            continue
         elif(data['status'] != k['status'] or data['friendly_name'] != k['friendly_name']):
             Methods.mysql_query(f"UPDATE uptime SET status='{k['status']}', friendly_name='{k['friendly_name']}' WHERE id='{k['id']}'")
             stat.append(check_status(k['status'], k['friendly_name']))
@@ -38,6 +40,7 @@ def job():
     text = "\n".join(stat)
     if(len(text) > 0):
         Methods.send(331465308, text)
+    anotify = None
 
 while True:
     try:
@@ -46,6 +49,8 @@ while True:
     except KeyboardInterrupt:
         exit()
     except Exception as e:
-        Methods.log("UptimeParser-ERROR", f"Произошла ошибка.\n\n{e}")
-        Methods.send(331465308, f"С uptime-парсером что-то не так!\n\n{e}")
+        if(anotify != e):
+            anotify = e
+            Methods.log("UptimeParser-ERROR", f"Произошла ошибка.\n\n{e}")
+            Methods.send(331465308, f"С uptime-парсером что-то не так!\n\n{e}")
         sleep(300)
