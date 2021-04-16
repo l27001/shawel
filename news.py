@@ -4,7 +4,6 @@ import requests as req
 import subprocess,time,os,datetime,schedule
 from methods import Methods
 dir_path = os.path.dirname(os.path.realpath(__file__))
-anotify = None
 
 Word = ['возобновляются', 'возобновятся', 'отменяются',
     'приостанавливаются', 'приостанавливается', 'приостановлен',
@@ -52,7 +51,6 @@ def job():
             attach = ''
         link = obj.find("a", class_="oneNewsMore")
         Methods.mass_send([331465308, 2000000016], text+"\n\nhttps://engschool9.ru"+link['href'], attachment=attach)
-        anotify = None
 
 schedule.every().hour.at(":00").do(job)
 schedule.every().hour.at(":30").do(job)
@@ -65,10 +63,8 @@ def run():
         except KeyboardInterrupt:
             exit()
         except Exception as e:
-            if(anotify != e):
-                anotify = e
-                Methods.log("Parser2-ERROR", f"Произошла ошибка.\n\n{e}")
-                Methods.send(331465308, f"С парсером #2 что-то не так!\n\n{e}")
+            Methods.log("Parser2-ERROR", f"Произошла ошибка.\n\n{e}")
+            Methods.send(331465308, f"С парсером #2 что-то не так!\n\n{e}")
             time.sleep(60)
 
 if(__name__ == '__main__'):

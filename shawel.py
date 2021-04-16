@@ -38,6 +38,7 @@ def start():
 		sub.append(subprocess.Popen(["python3",dir_path+"/unpoliv.py"]))
 		if(args.disable_rasp_parser != True):
 			sub.append(subprocess.Popen(["python3",dir_path+"/parse.py"]))
+			sub.append(subprocess.Popen(["python3",dir_path+"/zvonki_parse.py"]))
 		if(args.disable_news_parser != True):
 			sub.append(subprocess.Popen(["python3",dir_path+"/news.py"]))
 		sub.append(subprocess.Popen(["python3",dir_path+"/uptime_parse.py"]))
