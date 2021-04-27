@@ -45,9 +45,8 @@ def start():
 		Methods.log("INFO",f"{scrname['name']} успешно запущен.")
 		while True:
 			try:
-				i = 0
-				for n in procs:
-					code = n.exitcode
+				for i in range(len(procs)-1, -1, -1):
+					code = procs[i].exitcode
 					if(code == None):
 						pass
 					elif(code == 0):
@@ -57,7 +56,6 @@ def start():
 						del(procs[i])
 						builtins.acmds += 1
 						builtins.aerrs += 1
-					i+=1
 				response = requests.get(server+"?act=a_check&key="+key+"&ts="+ts+"&wait=20",timeout=22).json()
 				if 'failed' in response:
 					lp = api.groups.getLongPollServer(group_id=groupid)
@@ -82,9 +80,11 @@ def start():
 		for n in sub:
 			n.terminate()
 		exit()
-	except(ConnectTimeout, HTTPError, ReadTimeout, Timeout, ConnectionError):
-		Methods.log("ERROR","Запуск не удался. Повтор через 10 секунд.")
-		time.sleep(10)
-		start()
+
 Methods.log("INFO",f"Запуск бота...")
-start()
+try:
+	start()
+except(ConnectTimeout, HTTPError, ReadTimeout, Timeout, ConnectionError):
+	Methods.log("ERROR","Запуск не удался. Повтор через 10 секунд.")
+	time.sleep(10)
+	start()

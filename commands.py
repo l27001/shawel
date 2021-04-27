@@ -81,19 +81,20 @@ class Commands:
                 Methods.mysql_query(f"INSERT INTO chats (`id`) VALUES ({chat_id})")
                 chatinfo = Methods.mysql_query(f"SELECT * FROM chats WHERE id = '{chat_id}' LIMIT 1")
             userinfo.update({'chatinfo':chatinfo})
-        try:
-            text[0] = text[0].lower()
-            text[0] = text[0].replace('/','')
-            userinfo.update({'replid':replid,'chat_id':chat_id, 'from_id':from_id, 'attachments':obj['attachments']})
-            if(cmds.get(text[0]) == None):
-                if(chat_id < 2000000000):
-                    Methods.send(chat_id, "👎🏻 Не понял.")
-                return None
-            cmds[text[0]](userinfo, text[1:])
-        except Exception as e:
-            Methods.log("ERROR", f"Непредвиденная ошибка. {str(e)}")
-            Methods.send(chat_id, "⚠ Произошла непредвиденная ошибка.\nОбратитесь к @l27001", attachment="photo-183256712_457239188")
-            raise
+        text[0] = text[0].lower()
+        text[0] = text[0].replace('/','')
+        userinfo.update({'replid':replid,'chat_id':chat_id, 'from_id':from_id, 'attachments':obj['attachments']})
+        if(cmds.get(text[0]) == None):
+            if(chat_id < 2000000000):
+                Methods.send(chat_id, "👎🏻 Не понял.")
+            return None
+        else:
+            try:
+                cmds[text[0]](userinfo, text[1:])
+            except Exception as e:
+                Methods.log("ERROR", f"Непредвиденная ошибка. {str(e)}")
+                Methods.send(chat_id, "⚠ Произошла непредвиденная ошибка.\nОбратитесь к @l27001", attachment="photo-183256712_457239188")
+                raise e
         if(DEBUG == True):
             Methods.log("Debug", f"Время выполнения: {str(timeit.default_timer()-extime)}")
 

@@ -67,8 +67,8 @@ def job():
             Methods.send(n['vkid'],message=txt,attachment=at,keyboard=Methods.construct_keyboard(b2=Methods.make_button(type="intent_unsubscribe",peer_id=n['vkid'],intent="non_promo_newsletter",label="Отписаться"),inline="true"),intent="non_promo_newsletter")
             i+=1
             time.sleep(1)
-        subprocess.Popen("rm /srv/http/shawel/rasp-files/*", shell=True)
-        subprocess.Popen(f"cp {dir_path}/parse/files/* /srv/http/shawel/rasp-files/", shell=True)
+#        subprocess.Popen("rm /srv/http/shawel/rasp-files/*", shell=True)
+#        subprocess.Popen(f"cp {dir_path}/parse/files/* /srv/http/shawel/rasp-files/", shell=True)
         Methods.mysql_query(f"UPDATE vk SET `rasp-updated`='{date}'")
         Methods.log("Parser", "Обнаружено новое расписание.")
         time.sleep(60)
