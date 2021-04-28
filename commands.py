@@ -1036,7 +1036,7 @@ class Commands:
 
     def zvonki(userinfo, text):
         """Отправляет расписание звонков"""
-        Methods.send(userinfo['chat_id'],attachment=Methods.mysql_query("SELECT zvonki FROM vk")['zvonki'])
+        Methods.send(userinfo['chat_id'],"https://shawel.ezdomain.ru/zvonki",attachment=Methods.mysql_query("SELECT zvonki FROM vk")['zvonki'])
 
     def zerkalo(userinfo, text):
         """Отзеркаливает изображение"""
