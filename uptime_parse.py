@@ -18,7 +18,7 @@ def job():
     res = requests.post('https://api.uptimerobot.com/v2/getMonitors?format=json', json={"api_key":uptimerobot_api}).json()
     monitors = res['monitors']
     stat = []
-    allu = Methods.mysql_query("SELECT id, friendly_name FROM uptime", "all")
+    allu = Methods.mysql_query("SELECT id, friendly_name FROM uptime", fetch="all")
     all_mon = {}
     for k in allu:
         all_mon.update({k['id']:k['friendly_name']})
