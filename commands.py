@@ -444,7 +444,7 @@ class Commands:
         """Статус"""
         response = Methods.mysql_query("SELECT * FROM uptime WHERE status != '2'", fetch="all")
         if(response == ()):
-            Methods.send(userinfo['chat_id'], "✔ Все в порядке.\n\nhttps://status.ezdomain.ru/")
+            Methods.send(userinfo['chat_id'], "✔ Все в порядке.")
         else:
             out = []
             for i in response:
@@ -454,7 +454,7 @@ class Commands:
                     out.append(f"❓ {i['friendly_name']} Приостановлен")
                 else:
                     out.append(f"❓ {i['friendly_name']} -> {i['status']}")
-            Methods.send(userinfo['chat_id'], "\n".join(out)+"\n\nhttps://status.ezdomain.ru/")
+            Methods.send(userinfo['chat_id'], "\n".join(out))
 
 
     def aEXP(userinfo, text):
