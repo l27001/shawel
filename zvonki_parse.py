@@ -38,10 +38,14 @@ def job():
         p = subprocess.Popen(["python3",f"{dir_path}/parse/wm.py","zvonki"])
         p.wait()
         attach = []
+        mysql_query("DELETE FROM imgs WHERE mark='zvonki'")
         for n in sorted(os.listdir(dir_path+"/parse/zvonki")):
             attach.append(Methods.upload_img('331465308',dir_path+'/parse/zvonki/'+n))
-            at = ''
-            i = 0
+            with open(dir_path+'/parse/zvonki/'+n, 'rb') as f:
+                blob = f.read()
+            mysql_query("INSERT INTO imgs (`image`,`type`,`size`,`mark`) VALUES (%s, %s, %s, %s)", (blob, n.split('.')[-1], os.path.getsize(dir_path+'/parse/zvonki/'+n), 'zvonki'))
+        at = ''
+        i = 0
         for n in attach:
             if(i < 1):
                 at = n

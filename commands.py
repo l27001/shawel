@@ -442,7 +442,7 @@ class Commands:
 
     def status(userinfo, text):
         """Статус"""
-        response = Methods.mysql_query("SELECT * FROM uptime WHERE status != '2'", fetch="all")
+        response = Methods.mysql_query("SELECT * FROM uptime WHERE status != '2' ORDER BY friendly_name", fetch="all")
         if(response == ()):
             Methods.send(userinfo['chat_id'], "✔ Все в порядке.")
         else:

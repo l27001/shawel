@@ -64,6 +64,33 @@ INSERT INTO `chats` VALUES (2000000002,0,0),(2000000015,0,1),(2000000016,1,0),(2
 UNLOCK TABLES;
 
 --
+-- Table structure for table `imgs`
+--
+
+DROP TABLE IF EXISTS `imgs`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `imgs` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `image` blob NOT NULL,
+  `type` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `size` int(11) NOT NULL,
+  `mark` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `mark` (`mark`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `imgs`
+--
+
+LOCK TABLES `imgs` WRITE;
+/*!40000 ALTER TABLE `imgs` DISABLE KEYS */;
+/*!40000 ALTER TABLE `imgs` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `mute`
 --
 
@@ -162,7 +189,7 @@ CREATE TABLE `vk` (
 
 LOCK TABLES `vk` WRITE;
 /*!40000 ALTER TABLE `vk` DISABLE KEYS */;
-INSERT INTO `vk` VALUES ('photo331465308_457248628_5c9f90908ce8ffdc47,photo331465308_457248629_80d93f4a88cd17b5c6,photo331465308_457248630_f5d897706d59dcd541','photo331465308_457248417_064daf18dc7cb54891','17:30:00 29.04.2021','14:00:00 02.05.2021',0,1617731100,1603791912);
+INSERT INTO `vk` VALUES ('photo331465308_457248903_5025b52e2db77f6c24,photo331465308_457248904_f21b200fb651cb36d4','photo331465308_457248905_a54bbd7a94f77110b6,photo331465308_457248906_2e99be46af2e418254','18:30:00 12.05.2021','13:30:00 13.05.2021',0,1617731100,1603791912);
 /*!40000 ALTER TABLE `vk` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -175,4 +202,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-05-02 14:17:43
+-- Dump completed on 2021-05-13 13:40:21

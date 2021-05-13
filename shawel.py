@@ -8,6 +8,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('-d','--debug', action='store_true', help="enable debug mode")
 parser.add_argument('--disable-rasp-parser', action='store_true', help="disables rasp parser")
 parser.add_argument('--disable-news-parser', action='store_true', help="disables news parser")
+parser.add_argument('--disable-uptime-parser', action='store_true', help="disables uptime parser")
 args = parser.parse_args()
 import builtins
 builtins.DEBUG = args.debug
@@ -41,7 +42,8 @@ def start():
 			sub.append(subprocess.Popen(["python3",dir_path+"/zvonki_parse.py"]))
 		if(args.disable_news_parser != True):
 			sub.append(subprocess.Popen(["python3",dir_path+"/news.py"]))
-		sub.append(subprocess.Popen(["python3",dir_path+"/uptime_parse.py"]))
+		if(args.disable_uptime_parser != True):
+			sub.append(subprocess.Popen(["python3",dir_path+"/uptime_parse.py"]))
 		Methods.log("INFO",f"{scrname['name']} успешно запущен.")
 		while True:
 			try:
@@ -50,9 +52,11 @@ def start():
 					if(code == None):
 						pass
 					elif(code == 0):
+						procs[i].join()
 						del(procs[i])
 						builtins.acmds += 1
 					else:
+						procs[i].join()
 						del(procs[i])
 						builtins.acmds += 1
 						builtins.aerrs += 1
