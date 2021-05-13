@@ -1,12 +1,11 @@
 from os.path import isfile, isdir
-from os import listdir, mkdir
+from os import listdir, mkdir, remove
 from collections import deque
 import time, datetime, random, re, timeit, json
 from config import groupid
 from methods import Methods
 from other import dir_path, blackwords
 from demotivator.demotiv import demotiv
-from gdz.gdz import gdz as get_gdz
 from voice.voice import mk_voice
 import qiwi
 from zerkalo.zerkalo import zerkalo
@@ -412,6 +411,7 @@ class Commands:
                         url = n['url']
                 demot = demotiv(text1, text2, url)
                 response = Methods.upload_img(userinfo['from_id'], demot)
+                remove(demot)
                 Methods.send(userinfo['chat_id'], "", response)
         except (KeyError, IndexError):
                 Methods.send(userinfo['chat_id'], "⚠ Необходима фотография!\n\n/demotiv Строка 1(обязат)\nстрока 2(не обязат)")
@@ -578,35 +578,6 @@ class Commands:
                         keyb = Methods.construct_keyboard(inline="true", b1=Methods.make_button(label="/топ", color="positive"), b2=Methods.make_button(label="/полив"), b3=Methods.make_button(color="secondary", label="/влага"))
                         Methods.send(userinfo['chat_id'], f"✔ Вы активировали автополив на {n} часов.\nАвтополив будет активен до {pr}.\nСписано {n*20} EXP", keyboard=keyb)
 
-    def gdz(userinfo, text):
-        """ГДЗ"""
-        if(len(text) < 2):
-            Methods.send(userinfo['chat_id'], "⚠ /gdz [предмет] [номер/страница]")
-            return 0
-        try:
-            nom = int(text[1])
-            if(nom < 1):
-                raise('<1')
-        except:
-            Methods.send(userinfo['chat_id'], "⚠ Введите число. /gdz [предмет] [номер/страница]")
-            return 0
-        a = get_gdz(text[0], nom)
-        if(a == 1):
-            Methods.send(userinfo['chat_id'], "⚠ Номер/страница не найден.")
-            return 0
-        if(a == 2):
-            Methods.send(userinfo['chat_id'], "⚠ Неизвестный предмет. /gdz [предмет] [номер/страница] Доступные предметы:\nАлгебра\nГеометрия\nАнглийский")
-            return 0
-        i = 0
-        b = []
-        for n in a:
-            i+=1
-            path = f"{dir_path}/gdz/files/{text[0].lower()}_{nom}_{i}.jpg"
-            if(isfile(path) == False):
-                Methods.download_img(n, path)
-            b.append(Methods.upload_img(userinfo['from_id'], path))
-        Methods.send(userinfo['chat_id'], f"{nom}", ",".join(b))
-
     def kazik(userinfo, text):
         """Казино"""
         if('chatinfo' in userinfo and userinfo['chatinfo']['game-cmds'] == 0):
@@ -681,8 +652,9 @@ class Commands:
         except AssertionError:
             Methods.send(userinfo['chat_id'],"⚠ Введен некорректный текст для озвучивания.")
             return 0
-        file = Methods.upload_voice(userinfo['from_id'], file)
-        Methods.send(userinfo['chat_id'], attachment=file)
+        file_send = Methods.upload_voice(userinfo['from_id'], file)
+        remove(file)
+        Methods.send(userinfo['chat_id'], attachment=file_send)
 
     def setdostup(userinfo, text):
         """"""
@@ -1065,7 +1037,9 @@ class Commands:
             return 0
         out = []
         for n in k:
-            out.append(Methods.upload_img(userinfo['from_id'], zerkalo(n, typ)))
+            file = zerkalo(n, typ)
+            out.append(Methods.upload_img(userinfo['from_id'], file))
+            remove(file)
         Methods.send(userinfo['chat_id'], attachment=out)
 
     def text(userinfo, text):
@@ -1091,7 +1065,9 @@ class Commands:
             return 0
         out = []
         for n in k:
-            out.append(Methods.upload_img(userinfo['from_id'], mk_text(n, text)))
+            file = mk_text(n, text)
+            out.append(Methods.upload_img(userinfo['from_id'], file))
+            remove(file)
         Methods.send(userinfo['chat_id'], attachment=out)
 
     def do_parse(userinfo, text):
@@ -1138,7 +1114,6 @@ cmds = {'info':Commands.info, 'инфо':Commands.info,
 'akey':Commands.clrkeyb, 
 'уровень':Commands.level, 'level':Commands.level, 'lvl':Commands.level, 'левел':Commands.level, 'лвл':Commands.level, 
 'автополив':Commands.autopoliv, 
-'gdz':Commands.gdz, 'гдз':Commands.gdz, 
 'казино':Commands.kazik, 
 'say':Commands.say, 'скажи':Commands.say, 'напиши':Commands.say, 
 'voice':Commands.voice, 'озвучить':Commands.voice, 'голос':Commands.voice,

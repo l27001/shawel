@@ -1,8 +1,5 @@
 #!/usr/bin/python3
-from PIL import ImageFont
-from PIL import Image
-from PIL import ImageDraw
-from PIL import ImageOps
+from PIL import ImageFont, ImageOps, Image, ImageDraw 
 import random,requests,os
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
@@ -10,10 +7,9 @@ def demotiv(text,text2,img1):
 	text = str(text)
 	text2 = str(text2)
 	p = requests.get(img1)
-	if(os.path.isdir(dir_path+"/files") == False):
-		os.mkdir(dir_path+"/files")
-	nme = dir_path+'/files/'+str(random.randint(1,655355))+'.jpg'
-	#nme = dir_path+'/files/out.jpg'
+	if(os.path.isdir(tmp_dir+"/demotiv") == False):
+		os.mkdir(tmp_dir+"/demotiv")
+	nme = tmp_dir+'/demotiv/'+str(random.randint(1,655355))+'.jpg'
 	with open(nme, "wb") as out:
 		out.write(p.content)
 	img1 = Image.open(nme)
@@ -32,7 +28,6 @@ def demotiv(text,text2,img1):
 
 	font = ImageFont.truetype(dir_path+'/11874.ttf', razm//15)
 	font2 = ImageFont.truetype(dir_path+'/11874.ttf', razm//21)
-	#wm = ImageFont.truetype(dir_path+'/11874.ttf', H//65)
 
 	w1,h1 = font.getsize(text)
 	w,h = font2.getsize(text2)
@@ -54,10 +49,8 @@ def demotiv(text,text2,img1):
 	draw = ImageDraw.Draw(img)
 	x = int((W - W1)//2)
 	y = int(H//9)
-	#waterw,waterh = wm.getsize("Made by @shawelbot")
 	img.paste(img1,(x,y))
 	draw.text(text_position, text, text_color, font)
-	#draw.text((W-waterw,H-waterh), "Made by @shawelbot", text_color, wm)
 	wm = Image.open(dir_path+"/200.png")
 	wm = wm.resize((razmm//4,razmm//4))
 	wmw,wmh = wm.size
@@ -65,11 +58,3 @@ def demotiv(text,text2,img1):
 	img.paste(wm,(W-wmw,H-wmh),wm)
 	img.save(nme)
 	return nme
-
-if(__name__ == '__main__'):
-	import sys
-	text = sys.argv[1]
-	text2 = sys.argv[2]
-	img1 = sys.argv[3]
-
-	demotiv(text,text2,img1)

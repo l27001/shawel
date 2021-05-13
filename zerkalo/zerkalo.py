@@ -5,9 +5,9 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 
 def zerkalo(file, typ=1):
     p = requests.get(file)
-    if(os.path.isdir(dir_path+"/files") == False):
-        os.mkdir(dir_path+"/files")
-    nme = dir_path+'/files/'+str(random.randint(1,655355))+'.jpg'
+    if(os.path.isdir(tmp_dir+"/zerkalo") == False):
+        os.mkdir(tmp_dir+"/zerkalo")
+    nme = tmp_dir+'/zerkalo/'+str(random.randint(1,655355))+'.jpg'
     with open(nme, "wb") as out:
         out.write(p.content)
     im = Image.open(nme)

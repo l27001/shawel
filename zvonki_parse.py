@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import requests as req
 import subprocess,time,os,datetime,schedule,shutil
 from methods import Methods
+from config import tmp_dir
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
 headers = {
@@ -13,8 +14,8 @@ def job(mode=0):
     resp = req.get("https://engschool9.ru/content/raspisanie.html", headers=headers)
     soup = BeautifulSoup(resp.text, 'html.parser')
     src = soup.findAll("iframe")[-1]['src']
-    if(os.path.isdir(dir_path+"/parse/zvonki") == False):
-        os.mkdir(dir_path+"/parse/zvonki")
+    if(os.path.isdir(tmp_dir+"/parse/zvonki") == False):
+        os.makedirs(tmp_dir+"/parse/zvonki")
     date = datetime.datetime.today().strftime("%H:%M:%S %d.%m.%Y")
     try:
         with open(dir_path+'/parse/result-zvonki.txt','r') as f:
@@ -22,26 +23,22 @@ def job(mode=0):
     except FileNotFoundError:
         res = ''
     if(res != src):
-        for n in os.listdir(dir_path+"/parse/zvonki"):
-            os.remove(dir_path+"/parse/zvonki/"+n)
-        # p = subprocess.Popen(["wget",f"'{src}'","-qO",dir_path+"/parse/zvonki.pdf",f"--user-agent='{headers['User-Agent']}'"])
-        # p.wait()
         with req.get(src, stream=True, headers=headers) as r:
-            with open(dir_path+"/parse/zvonki.pdf", "wb") as f:
+            with open(tmp_dir+"/parse/zvonki.pdf", "wb") as f:
                 shutil.copyfileobj(r.raw, f)
-        p = subprocess.Popen(["pdftoppm",dir_path+"/parse/zvonki.pdf",dir_path+"/parse/zvonki/out","-png","-thinlinemode","shape"])
+        p = subprocess.Popen(["pdftoppm",tmp_dir+"/parse/zvonki.pdf",tmp_dir+"/parse/zvonki/out","-png","-thinlinemode","shape"])
         p.wait()
-        p = subprocess.Popen(["python3",f"{dir_path}/parse/check.py","zvonki"])
+        p = subprocess.Popen(["python3",f"{dir_path}/parse/check.py","zvonki",tmp_dir])
         p.wait()
-        p = subprocess.Popen(["python3",f"{dir_path}/parse/wm.py","zvonki"])
+        p = subprocess.Popen(["python3",f"{dir_path}/parse/wm.py","zvonki",tmp_dir])
         p.wait()
         attach = []
         Methods.mysql_query("DELETE FROM imgs WHERE mark='zvonki'")
-        for n in sorted(os.listdir(dir_path+"/parse/zvonki")):
-            attach.append(Methods.upload_img('331465308',dir_path+'/parse/zvonki/'+n))
-            with open(dir_path+'/parse/zvonki/'+n, 'rb') as f:
+        for n in sorted(os.listdir(tmp_dir+"/parse/zvonki")):
+            attach.append(Methods.upload_img('331465308',tmp_dir+'/parse/zvonki/'+n))
+            with open(tmp_dir+'/parse/zvonki/'+n, 'rb') as f:
                 blob = f.read()
-            Methods.mysql_query("INSERT INTO imgs (`image`,`type`,`size`,`mark`) VALUES (%s, %s, %s, %s)", (blob, n.split('.')[-1], os.path.getsize(dir_path+'/parse/zvonki/'+n), 'zvonki'))
+            Methods.mysql_query("INSERT INTO imgs (`image`,`type`,`size`,`mark`) VALUES (%s, %s, %s, %s)", (blob, n.split('.')[-1], os.path.getsize(tmp_dir+'/parse/zvonki/'+n), 'zvonki'))
         at = ''
         i = 0
         for n in attach:
@@ -74,6 +71,8 @@ def job(mode=0):
         Methods.mysql_query("UPDATE vk SET zvonki='"+at+"'")
         with open(dir_path+'/parse/result-zvonki.txt','w') as f:
             f.write(src)
+        for n in os.listdir(tmp_dir+"/parse/zvonki"):
+            os.remove(tmp_dir+"/parse/zvonki/"+n)
         Methods.log("ZvonkiParser", "Обнаружено новое расписание звонков.")
         time.sleep(60)
     else:

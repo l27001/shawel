@@ -2,10 +2,11 @@
 from PIL import Image
 import os, sys
 dir_ = sys.argv[1]
+tmp_dir = sys.argv[2]
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
-for n in sorted(os.listdir(f"{dir_path}/{dir_}")):
-	im = Image.open(f"{dir_path}/{dir_}/{n}")
+for n in sorted(os.listdir(f"{tmp_dir}/parse/{dir_}")):
+	im = Image.open(f"{tmp_dir}/parse/{dir_}/{n}")
 	onew = 0
 	oneh = 0
 	twow = 0
@@ -38,4 +39,4 @@ for n in sorted(os.listdir(f"{dir_path}/{dir_}")):
 	w,h = img.size
 	im.paste(img, (W//2-w//2,H//2-h//2), img)
 	im = im.convert("RGB")
-	im.save(f'{dir_path}/{dir_}/{n}')
+	im.save(f'{tmp_dir}/parse/{dir_}/{n}')

@@ -1,21 +1,21 @@
 #!/usr/bin/python3
 from bs4 import BeautifulSoup
 import requests as req
-import subprocess,time,os,datetime,schedule
+import subprocess,time,os,datetime,schedule,shutil
 from methods import Methods
+from config import tmp_dir
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
 headers = {
     'User-Agent': 'ShawelBot/Parser'
 }
 def job(mode=0):
-    #resp = req.get("https://engschool9.ru/content/raspisanie.html", headers=headers, proxies={"http":proxy,"https":proxy})
     Methods.log("Parser", "Парсер выполняет проверку...")
     resp = req.get("https://engschool9.ru/content/raspisanie.html", headers=headers)
     soup = BeautifulSoup(resp.text, 'html.parser')
     src = soup.find("iframe")['src']
-    if(os.path.isdir(dir_path+"/parse/files") == False):
-        os.mkdir(dir_path+"/parse/files")
+    if(os.path.isdir(tmp_dir+"/parse/rasp") == False):
+        os.makedirs(tmp_dir+"/parse/rasp")
     date = datetime.datetime.today().strftime("%H:%M:%S %d.%m.%Y")
     Methods.mysql_query(f"UPDATE vk SET `rasp-checked`='{date}'")
     try:
@@ -24,24 +24,22 @@ def job(mode=0):
     except FileNotFoundError:
         res = ''
     if(res != src):
-        for n in os.listdir(dir_path+"/parse/files"):
-            os.remove(dir_path+"/parse/files/"+n)
-        #p = subprocess.Popen(["wget",src,"-qO",dir_path+"/parse/raspisanie.pdf","--user-agent='Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.125 Safari/537.36 OPR/70.0.3728.133'", "-e", "use_proxy=yes", "-e", f"https_proxy={proxy}", "-e", f"http_proxy={proxy}"])
-        p = subprocess.Popen(["wget",src,"-qO",dir_path+"/parse/raspisanie.pdf",f"--user-agent='{headers['User-Agent']}'"])
+        with req.get(src, stream=True, headers=headers) as r:
+            with open(tmp_dir+"/parse/raspisanie.pdf", "wb") as f:
+                shutil.copyfileobj(r.raw, f)
+        p = subprocess.Popen(["pdftoppm",tmp_dir+"/parse/raspisanie.pdf",tmp_dir+"/parse/rasp/out","-png"])
         p.wait()
-        p = subprocess.Popen(["pdftoppm",dir_path+"/parse/raspisanie.pdf",dir_path+"/parse/files/out","-png"])
+        p = subprocess.Popen(["python3",f"{dir_path}/parse/check.py","rasp",tmp_dir])
         p.wait()
-        p = subprocess.Popen(["python3",f"{dir_path}/parse/check.py","files"])
-        p.wait()
-        p = subprocess.Popen(["python3",f"{dir_path}/parse/wm.py","files"])
+        p = subprocess.Popen(["python3",f"{dir_path}/parse/wm.py","rasp",tmp_dir])
         p.wait()
         attach = []
         Methods.mysql_query("DELETE FROM imgs WHERE mark='rasp'")
-        for n in sorted(os.listdir(dir_path+"/parse/files")):
-            attach.append(Methods.upload_img('331465308',dir_path+'/parse/files/'+n))
-            with open(dir_path+'/parse/files/'+n, 'rb') as f:
+        for n in sorted(os.listdir(tmp_dir+"/parse/rasp")):
+            attach.append(Methods.upload_img('331465308',tmp_dir+'/parse/rasp/'+n))
+            with open(tmp_dir+'/parse/rasp/'+n, 'rb') as f:
                 blob = f.read()
-            Methods.mysql_query("INSERT INTO imgs (`image`,`type`,`size`,`mark`) VALUES (%s, %s, %s, %s)", (blob, n.split('.')[-1], os.path.getsize(dir_path+'/parse/files/'+n), 'rasp'))
+            Methods.mysql_query("INSERT INTO imgs (`image`,`type`,`size`,`mark`) VALUES (%s, %s, %s, %s)", (blob, n.split('.')[-1], os.path.getsize(tmp_dir+'/parse/rasp/'+n), 'rasp'))
         at = ''
         i = 0
         for n in attach:
@@ -74,6 +72,8 @@ def job(mode=0):
         Methods.mysql_query(f"UPDATE vk SET `rasp-updated`='{date}', `rasp`='{at}'")
         with open(dir_path+'/parse/result.txt','w') as f:
             f.write(src)
+        for n in os.listdir(tmp_dir+"/parse/rasp"):
+            os.remove(tmp_dir+"/parse/rasp/"+n)
         Methods.log("Parser", "Обнаружено новое расписание.")
         time.sleep(60)
     else:

@@ -5,10 +5,10 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 
 def text(file, text):
     p = requests.get(file)
-    if(os.path.isdir(dir_path+"/files") == False):
-        os.mkdir(dir_path+"/files")
-    nme = f"{dir_path}/files/{random.randint(1,655355)}.jpg"
-    #nme = f"{dir_path}/files/0.jpg"
+    tmp_dir_path = tmp_dir+"/text"
+    if(os.path.isdir(tmp_dir_path) == False):
+        os.mkdir(tmp_dir_path)
+    nme = f"{tmp_dir_path}/{random.randint(1,655355)}.jpg"
     with open(nme, "wb") as out:
         out.write(p.content)
     im = Image.open(nme)
