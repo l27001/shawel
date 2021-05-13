@@ -12,6 +12,9 @@ import qiwi
 from zerkalo.zerkalo import zerkalo
 from text.text import text as mk_text
 
+from parse import job as do_parse
+from zvonki_parse import job as do_zvonki_parse
+
 class Commands:
 
     def __init__(self, response):
@@ -1091,6 +1094,24 @@ class Commands:
             out.append(Methods.upload_img(userinfo['from_id'], mk_text(n, text)))
         Methods.send(userinfo['chat_id'], attachment=out)
 
+    def do_parse(userinfo, text):
+        if(userinfo['dostup'] < 2):
+            Methods.send(userinfo['chat_id'], "⛔ Не разрешено!")
+            return 0
+        if(len(text) > 0):
+            do_zvonki_parse()
+        else:
+            do_parse()
+
+    def do_parse_quiet(userinfo, text):
+        if(userinfo['dostup'] < 2):
+            Methods.send(userinfo['chat_id'], "⛔ Не разрешено!")
+            return 0
+        if(len(text) > 0):
+            do_zvonki_parse(1)
+        else:
+            do_parse(1)
+
 cmds = {'info':Commands.info, 'инфо':Commands.info, 
 'рандом':Commands.random, 'random':Commands.random, 
 'goose':Commands.goose, 'гусь':Commands.goose, 
@@ -1133,4 +1154,5 @@ cmds = {'info':Commands.info, 'инфо':Commands.info,
 "звонки":Commands.zvonki,
 "зеркало":Commands.zerkalo,"зер":Commands.zerkalo,
 "text":Commands.text,"текст":Commands.text,
+"парсер":Commands.do_parse,"парсерт":Commands.do_parse_quiet,
 }

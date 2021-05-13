@@ -8,7 +8,7 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 headers = {
     'User-Agent': 'ShawelBot/Parser'
 }
-def job():
+def job(mode=0):
     #resp = req.get("https://engschool9.ru/content/raspisanie.html", headers=headers, proxies={"http":proxy,"https":proxy})
     Methods.log("Parser", "Парсер выполняет проверку...")
     resp = req.get("https://engschool9.ru/content/raspisanie.html", headers=headers)
@@ -51,27 +51,27 @@ def job():
                 at = at+","+n
             i+=1
         txt = 'Новое расписание\nОбнаружено в '+date
-        rasp = Methods.mysql_query("SELECT COUNT(id) FROM `chats` WHERE raspisanie='1'")
-        i = 0
-        while i < rasp['COUNT(id)']:
-            a = []
-            r = Methods.mysql_query("SELECT id FROM `chats` WHERE raspisanie='1' LIMIT "+str(i)+", 50", fetch="all")
-            for n in r:
-                a.append(str(n['id']))
-            a = ",".join(a)
-            Methods.mass_send(peer_ids=a,message=txt,attachment=at)
-            i+=50
-            time.sleep(1)
-        rasp = Methods.mysql_query("SELECT vkid,raspisanie FROM users WHERE raspisanie>='1'", fetch="all")
-        Methods.mysql_query("UPDATE vk SET rasp='"+at+"'")
-        i = 0
-        for n in rasp:
-            Methods.send(n['vkid'],message=txt,attachment=at,keyboard=Methods.construct_keyboard(b2=Methods.make_button(type="intent_unsubscribe",peer_id=n['vkid'],intent="non_promo_newsletter",label="Отписаться"),inline="true"),intent="non_promo_newsletter")
-            i+=1
-            time.sleep(1)
-#        subprocess.Popen("rm /srv/http/shawel/rasp-files/*", shell=True)
-#        subprocess.Popen(f"cp {dir_path}/parse/files/* /srv/http/shawel/rasp-files/", shell=True)
-        Methods.mysql_query(f"UPDATE vk SET `rasp-updated`='{date}'")
+        if(mode == 0):
+            rasp = Methods.mysql_query("SELECT COUNT(id) FROM `chats` WHERE raspisanie='1'")
+            i = 0
+            while i < rasp['COUNT(id)']:
+                a = []
+                r = Methods.mysql_query("SELECT id FROM `chats` WHERE raspisanie='1' LIMIT "+str(i)+", 50", fetch="all")
+                for n in r:
+                    a.append(str(n['id']))
+                a = ",".join(a)
+                Methods.mass_send(peer_ids=a,message=txt,attachment=at)
+                i+=50
+                time.sleep(1)
+            rasp = Methods.mysql_query("SELECT vkid,raspisanie FROM users WHERE raspisanie>='1'", fetch="all")
+            i = 0
+            for n in rasp:
+                Methods.send(n['vkid'],message=txt,attachment=at,keyboard=Methods.construct_keyboard(b2=Methods.make_button(type="intent_unsubscribe",peer_id=n['vkid'],intent="non_promo_newsletter",label="Отписаться"),inline="true"),intent="non_promo_newsletter")
+                i+=1
+                time.sleep(1)
+        else:
+            Methods.send(331465308,message=txt,attachment=at)
+        Methods.mysql_query(f"UPDATE vk SET `rasp-updated`='{date}', `rasp`='{at}'")
         with open(dir_path+'/parse/result.txt','w') as f:
             f.write(src)
         Methods.log("Parser", "Обнаружено новое расписание.")
