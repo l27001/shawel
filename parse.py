@@ -24,8 +24,6 @@ def job():
     except FileNotFoundError:
         res = ''
     if(res != src):
-        with open(dir_path+'/parse/result.txt','w') as f:
-            f.write(src)
         for n in os.listdir(dir_path+"/parse/files"):
             os.remove(dir_path+"/parse/files/"+n)
         #p = subprocess.Popen(["wget",src,"-qO",dir_path+"/parse/raspisanie.pdf","--user-agent='Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.125 Safari/537.36 OPR/70.0.3728.133'", "-e", "use_proxy=yes", "-e", f"https_proxy={proxy}", "-e", f"http_proxy={proxy}"])
@@ -38,12 +36,12 @@ def job():
         p = subprocess.Popen(["python3",f"{dir_path}/parse/wm.py","files"])
         p.wait()
         attach = []
-        mysql_query("DELETE FROM imgs WHERE mark='rasp'")
+        Methods.mysql_query("DELETE FROM imgs WHERE mark='rasp'")
         for n in sorted(os.listdir(dir_path+"/parse/files")):
             attach.append(Methods.upload_img('331465308',dir_path+'/parse/files/'+n))
             with open(dir_path+'/parse/files/'+n, 'rb') as f:
                 blob = f.read()
-            mysql_query("INSERT INTO imgs (`image`,`type`,`size`,`mark`) VALUES (%s, %s, %s, %s)", (blob, n.split('.')[-1], os.path.getsize(dir_path+'/parse/files/'+n), 'rasp'))
+            Methods.mysql_query("INSERT INTO imgs (`image`,`type`,`size`,`mark`) VALUES (%s, %s, %s, %s)", (blob, n.split('.')[-1], os.path.getsize(dir_path+'/parse/files/'+n), 'rasp'))
         at = ''
         i = 0
         for n in attach:
@@ -74,6 +72,8 @@ def job():
 #        subprocess.Popen("rm /srv/http/shawel/rasp-files/*", shell=True)
 #        subprocess.Popen(f"cp {dir_path}/parse/files/* /srv/http/shawel/rasp-files/", shell=True)
         Methods.mysql_query(f"UPDATE vk SET `rasp-updated`='{date}'")
+        with open(dir_path+'/parse/result.txt','w') as f:
+            f.write(src)
         Methods.log("Parser", "Обнаружено новое расписание.")
         time.sleep(60)
     else:

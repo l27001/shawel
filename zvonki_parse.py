@@ -22,8 +22,6 @@ def job():
     except FileNotFoundError:
         res = ''
     if(res != src):
-        with open(dir_path+'/parse/result-zvonki.txt','w') as f:
-            f.write(src)
         for n in os.listdir(dir_path+"/parse/files"):
             os.remove(dir_path+"/parse/files/"+n)
         # p = subprocess.Popen(["wget",f"'{src}'","-qO",dir_path+"/parse/zvonki.pdf",f"--user-agent='{headers['User-Agent']}'"])
@@ -38,12 +36,12 @@ def job():
         p = subprocess.Popen(["python3",f"{dir_path}/parse/wm.py","zvonki"])
         p.wait()
         attach = []
-        mysql_query("DELETE FROM imgs WHERE mark='zvonki'")
+        Methods.mysql_query("DELETE FROM imgs WHERE mark='zvonki'")
         for n in sorted(os.listdir(dir_path+"/parse/zvonki")):
             attach.append(Methods.upload_img('331465308',dir_path+'/parse/zvonki/'+n))
             with open(dir_path+'/parse/zvonki/'+n, 'rb') as f:
                 blob = f.read()
-            mysql_query("INSERT INTO imgs (`image`,`type`,`size`,`mark`) VALUES (%s, %s, %s, %s)", (blob, n.split('.')[-1], os.path.getsize(dir_path+'/parse/zvonki/'+n), 'zvonki'))
+            Methods.mysql_query("INSERT INTO imgs (`image`,`type`,`size`,`mark`) VALUES (%s, %s, %s, %s)", (blob, n.split('.')[-1], os.path.getsize(dir_path+'/parse/zvonki/'+n), 'zvonki'))
         at = ''
         i = 0
         for n in attach:
@@ -72,6 +70,8 @@ def job():
             i+=1
             time.sleep(1)
         # Methods.send(331465308,message=txt,attachment=at,keyboard=Methods.construct_keyboard(b2=Methods.make_button(type="intent_unsubscribe",peer_id=331465308,intent="non_promo_newsletter",label="Отписаться"),inline="true"),intent="non_promo_newsletter")
+        with open(dir_path+'/parse/result-zvonki.txt','w') as f:
+            f.write(src)
         Methods.log("ZvonkiParser", "Обнаружено новое расписание звонков.")
         time.sleep(60)
     else:
