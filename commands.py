@@ -65,10 +65,10 @@ class Commands:
                 if('command' in obj['payload'] and obj['payload']['command'] == "internal_command"):
                     if(obj['payload']['action']['type'] == "intent_unsubscribe"):
                         Methods.mysql_query(f"UPDATE users SET raspisanie='0' WHERE vkid='{from_id}'")
-                        Methods.send(from_id, "Вы отписались от рассылки обновлений расписания.", keyboard=Methods.construct_keyboard(b1=Methods.make_button(type="intent_subscribe",peer_id=from_id,intent="non_promo_newsletter",label="Подписаться"),inline="true"))
+                        Methods.send(from_id, "Вы отписались от рассылки обновлений расписания.\nДля повторной подписки используйте команду '/рассылка'", keyboard=Methods.construct_keyboard(b1=Methods.make_button(type="intent_subscribe",peer_id=from_id,intent="non_promo_newsletter",label="Подписаться"),inline="true"))
                     elif(obj['payload']['action']['type'] == "intent_subscribe"):
                         Methods.mysql_query(f"UPDATE users SET raspisanie='1' WHERE vkid='{from_id}'")
-                        Methods.send(from_id, "Вы подписались на рассылку обновлений расписания.", keyboard=Methods.construct_keyboard(b2=Methods.make_button(type="intent_unsubscribe",peer_id=from_id,intent="non_promo_newsletter",label="Отписаться"),inline="true"))
+                        Methods.send(from_id, "Вы подписались на рассылку обновлений расписания.\nДля отписки используйте команду '/рассылка'", keyboard=Methods.construct_keyboard(b2=Methods.make_button(type="intent_unsubscribe",peer_id=from_id,intent="non_promo_newsletter",label="Отписаться"),inline="true"))
                     return None
             except TypeError: pass
             userinfo.update({'payload':obj['payload']})
@@ -264,7 +264,13 @@ class Commands:
     def raspisanie(userinfo, text):
         """Присылает последнее расписание"""
         rasp = Methods.mysql_query("SELECT rasp FROM vk")['rasp']
-        Methods.send(userinfo['chat_id'], "https://shawel.ezdomain.ru\n\nПоследнее расписание:", rasp)
+        if(userinfo['raspisanie'] == 1 or userinfo['chat_id'] > 2000000000):
+            text = "https://shawel.ezdomain.ru\n\nПоследнее расписание:"
+            keyb = ''
+        else:
+            text = "https://shawel.ezdomain.ru\n\nВы можете подписаться на рассылку раписания с помощью кнопки ниже."
+            keyb = Methods.construct_keyboard(b1=Methods.make_button(type="intent_subscribe",peer_id=userinfo['from_id'],intent="non_promo_newsletter",label="Подписаться"),inline="true")
+        Methods.send(userinfo['chat_id'], text, rasp, keyboard=keyb)
         #Methods.send(userinfo['chat_id'], "Какое расписание? Каникулы...")
 
     def send(userinfo, text):
@@ -1100,7 +1106,7 @@ cmds = {'info':Commands.info, 'инфо':Commands.info,
 'полив':Commands.poliv, 'полить':Commands.poliv, 
 'расписание':Commands.raspisanie, 
 'send':Commands.send, 
-'рассылка':Commands.rass, 
+'рассылка':Commands.rass, 'подписаться':Commands.rass, 'отписаться':Commands.rass,
 'log':Commands.log, 'лог':Commands.log, 
 'рома':Commands.roma, 'валера':Commands.valer, 'валерий':Commands.valer, 'руслан':Commands.ruslan, 
 'кирилл':Commands.kirill, 'кирил':Commands.kirill, 'влад':Commands.vlad, 'лера':Commands.lera, 'валерия':Commands.lera, 
