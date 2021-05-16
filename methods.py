@@ -137,3 +137,8 @@ class Methods:
                     return kx
         return {'name':'Легенда', 'exp':1000}
 
+    def check_keyboard(inline):
+        if(inline):
+            return "true"
+        else:
+            return "false"

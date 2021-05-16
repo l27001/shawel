@@ -47,7 +47,7 @@ def job(mode=0):
             else:
                 at = at+","+n
             i+=1
-        txt = 'Новое расписание звонков\nОбнаружено в '+date
+        txt = 'Новое расписание звонков\nОбнаружено в '+date+'\nДля отписки используйте команду \'/рассылка\''
         if(mode == 0):
             rasp = Methods.mysql_query("SELECT COUNT(id) FROM `chats` WHERE raspisanie='1'")
             i = 0

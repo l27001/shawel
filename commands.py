@@ -22,6 +22,7 @@ class Commands:
             extime = timeit.default_timer()
             print(today.strftime("%H:%M:%S %d.%m.%Y")+ ": "+str(response))
         obj = response['object']['message']
+        client_info = response['object']['client_info']
         if 'reply_message' in obj:
             replid = obj['reply_message']['from_id']
         else:
@@ -63,12 +64,13 @@ class Commands:
             try:
                 obj['payload'] = json.loads(obj['payload'])
                 if('command' in obj['payload'] and obj['payload']['command'] == "internal_command"):
+                    inline = Methods.check_keyboard(client_info['inline_keyboard'])
                     if(obj['payload']['action']['type'] == "intent_unsubscribe"):
                         Methods.mysql_query(f"UPDATE users SET raspisanie='0' WHERE vkid='{from_id}'")
-                        Methods.send(from_id, "Вы отписались от рассылки обновлений расписания.\nДля повторной подписки используйте команду '/рассылка'", keyboard=Methods.construct_keyboard(b1=Methods.make_button(type="intent_subscribe",peer_id=from_id,intent="non_promo_newsletter",label="Подписаться"),inline="true"))
+                        Methods.send(from_id, "Вы отписались от рассылки обновлений расписания.\nДля повторной подписки используйте команду '/рассылка'", keyboard=Methods.construct_keyboard(b1=Methods.make_button(type="intent_subscribe",peer_id=from_id,intent="non_promo_newsletter",label="Подписаться"),inline=inline))
                     elif(obj['payload']['action']['type'] == "intent_subscribe"):
                         Methods.mysql_query(f"UPDATE users SET raspisanie='1' WHERE vkid='{from_id}'")
-                        Methods.send(from_id, "Вы подписались на рассылку обновлений расписания.\nДля отписки используйте команду '/рассылка'", keyboard=Methods.construct_keyboard(b2=Methods.make_button(type="intent_unsubscribe",peer_id=from_id,intent="non_promo_newsletter",label="Отписаться"),inline="true"))
+                        Methods.send(from_id, "Вы подписались на рассылку обновлений расписания.\nДля отписки используйте команду '/рассылка'", keyboard=Methods.construct_keyboard(b2=Methods.make_button(type="intent_unsubscribe",peer_id=from_id,intent="non_promo_newsletter",label="Отписаться"),inline=inline))
                     return None
             except TypeError: pass
             userinfo.update({'payload':obj['payload']})
@@ -85,7 +87,7 @@ class Commands:
             userinfo.update({'chatinfo':chatinfo})
         text[0] = text[0].lower()
         text[0] = text[0].replace('/','')
-        userinfo.update({'replid':replid,'chat_id':chat_id, 'from_id':from_id, 'attachments':obj['attachments']})
+        userinfo.update({'replid':replid,'chat_id':chat_id, 'from_id':from_id, 'attachments':obj['attachments'], 'inline':client_info['inline_keyboard']})
         if(cmds.get(text[0]) == None):
             if(chat_id < 2000000000):
                 Methods.send(chat_id, "👎🏻 Не понял.")
@@ -130,7 +132,7 @@ class Commands:
             ch = f"\nChat-ID: {userinfo['chat_id']}"
         else:
             ch = ''
-        keyb = Methods.construct_keyboard(b77=Methods.make_button(color="secondary", label="/get", payload=str(uinfo['vkid'])), b3=Methods.make_button(label="/полив", color="primary"), inline="true", b1=Methods.make_button(label="/топ", color="positive"), b2=Methods.make_button(label="/рассылка", color="secondary"))
+        keyb = Methods.construct_keyboard(b77=Methods.make_button(color="secondary", label="/get", payload=str(uinfo['vkid'])), b3=Methods.make_button(label="/полив", color="primary"), inline=Methods.check_keyboard(userinfo['inline']), b1=Methods.make_button(label="/топ", color="positive"), b2=Methods.make_button(label="/рассылка", color="secondary"))
         Methods.send(userinfo['chat_id'], "Имя: "+name+"\nVKID: "+str(uinfo['vkid'])+"\nDostup: "+str(uinfo['dostup'])+"\nEXP: "+str(uinfo['EXP'])+"\n"+raspisanie+ch, keyboard=keyb, disable_mentions=1)
 
     def time(userinfo, text):
@@ -224,7 +226,7 @@ class Commands:
         while(i < a):
             txt = txt+"\n"+str(i+1)+") [id"+str(user[i]['id'])+"|"+user[i]['last_name']+" "+user[i]['first_name']+"] ["+expa[i]+"]: "+str(data[i]['EXP'])+" EXP"
             i+=1
-        keyb = Methods.construct_keyboard(b1=Methods.make_button(label="/полив", color="positive"), b4=Methods.make_button(label="/уровень", color="secondary"), b2=Methods.make_button(label="/влага", color="negative"), b3=Methods.make_button(label="/инфо", color="primary"), inline="true")
+        keyb = Methods.construct_keyboard(b1=Methods.make_button(label="/полив", color="positive"), b4=Methods.make_button(label="/уровень", color="secondary"), b2=Methods.make_button(label="/влага", color="negative"), b3=Methods.make_button(label="/инфо", color="primary"), inline=Methods.check_keyboard(userinfo['inline']))
         Methods.send(userinfo['chat_id'], f"Топ садовников:{txt}", keyboard=keyb, disable_mentions=1)
 
     def poliv(userinfo, text):
@@ -241,7 +243,7 @@ class Commands:
                 vl = random.randint(5, 15)
                 if(vl+bd_inf['vlaga'] > 100):
                     vl = 100-bd_inf['vlaga']
-                keyb = Methods.construct_keyboard(b1=Methods.make_button(label="/топ", color="positive"), b2=Methods.make_button(label="/влага", color="negative"), b3=Methods.make_button(label="/инфо", color="primary"), inline="true")
+                keyb = Methods.construct_keyboard(b1=Methods.make_button(label="/топ", color="positive"), b2=Methods.make_button(label="/влага", color="negative"), b3=Methods.make_button(label="/инфо", color="primary"), inline=Methods.check_keyboard(userinfo['inline']))
                 Methods.mysql_query(f"UPDATE users SET EXP=EXP+1 WHERE vkid='{userinfo['from_id']}'")
                 Methods.mysql_query("UPDATE vk SET `time-poliv`='"+str(timee)+"', `vlaga`='"+str(bd_inf['vlaga']+vl)+"'")
                 Methods.send(userinfo['chat_id'], "Вы полили Щавеля.\nВлага: "+str(bd_inf['vlaga']+vl)+"%", keyboard=keyb)
@@ -252,7 +254,7 @@ class Commands:
                 kx = Methods.get_level(userinfo['EXP'])
                 kx1 = Methods.get_level(userinfo['EXP']+1)
                 if(kx['name'] != kx1['name']):
-                    keyb=Methods.construct_keyboard(b1=Methods.make_button(label="/топ"), b2=Methods.make_button(label="/уровень", color="secondary"), inline="true")
+                    keyb=Methods.construct_keyboard(b1=Methods.make_button(label="/топ"), b2=Methods.make_button(label="/уровень", color="secondary"), inline=Methods.check_keyboard(userinfo['inline']))
                     Methods.send(userinfo['chat_id'], f"ТЫЩ! Вы получили новый уровень!\nНовый уровень: {kx1['name']}\nEXP: {userinfo['EXP']+1}", keyboard=keyb)
         else:
             t = 300-(timee-bd_inf['time-poliv'])
@@ -269,7 +271,7 @@ class Commands:
             keyb = ''
         else:
             text = "https://shawel.ezdomain.ru\n\nВы можете подписаться на рассылку раписания с помощью кнопки ниже."
-            keyb = Methods.construct_keyboard(b1=Methods.make_button(type="intent_subscribe",peer_id=userinfo['from_id'],intent="non_promo_newsletter",label="Подписаться"),inline="true")
+            keyb = Methods.construct_keyboard(b1=Methods.make_button(type="intent_subscribe",peer_id=userinfo['from_id'],intent="non_promo_newsletter",label="Подписаться"),inline=Methods.check_keyboard(userinfo['inline']))
         Methods.send(userinfo['chat_id'], text, rasp, keyboard=keyb)
         #Methods.send(userinfo['chat_id'], "Какое расписание? Каникулы...")
 
@@ -313,9 +315,9 @@ class Commands:
         """Подписаться/Отписаться от рассылки актуального расписания"""
         if(userinfo['chat_id'] == userinfo['from_id']):
             if(userinfo['raspisanie'] == 0):
-                Methods.send(userinfo['chat_id'],"Вы не подписаны", keyboard=Methods.construct_keyboard(b1=Methods.make_button(type="intent_subscribe",peer_id=userinfo['from_id'],intent="non_promo_newsletter",label="Подписаться"),inline="true"))
+                Methods.send(userinfo['chat_id'],"Вы не подписаны", keyboard=Methods.construct_keyboard(b1=Methods.make_button(type="intent_subscribe",peer_id=userinfo['from_id'],intent="non_promo_newsletter",label="Подписаться"),inline=Methods.check_keyboard(userinfo['inline'])))
             else:
-                Methods.send(userinfo['chat_id'],"Вы подписаны", keyboard=Methods.construct_keyboard(b2=Methods.make_button(type="intent_unsubscribe",peer_id=userinfo['from_id'],intent="non_promo_newsletter",label="Отписаться"),inline="true"))
+                Methods.send(userinfo['chat_id'],"Вы подписаны", keyboard=Methods.construct_keyboard(b2=Methods.make_button(type="intent_unsubscribe",peer_id=userinfo['from_id'],intent="non_promo_newsletter",label="Отписаться"),inline=Methods.check_keyboard(userinfo['inline'])))
         else:
             count = Methods.mysql_query(f"SELECT COUNT(*) FROM `chats` WHERE id = {userinfo['chat_id']} AND raspisanie=1")['COUNT(*)']
             if(count != 1):
@@ -388,7 +390,7 @@ class Commands:
             img = "photo"+response[0]['photo_id']
         except Exception:
             img = ""
-        keyb = Methods.construct_keyboard(b1=Methods.make_button(color="secondary", label="/info", payload=str(response[0]['id'])), b2=Methods.make_button(label="/топ"), inline="true")
+        keyb = Methods.construct_keyboard(b1=Methods.make_button(color="secondary", label="/info", payload=str(response[0]['id'])), b2=Methods.make_button(label="/топ"), inline=Methods.check_keyboard(userinfo['inline']))
         Methods.send(userinfo['chat_id'], txt+"vk.com/id"+str(response[0]['id']), img, keyboard=keyb)
 
     def demotiv(userinfo, text):
@@ -554,7 +556,7 @@ class Commands:
         lvl = kx['name']
         lvlnext = kx['exp']
         nexp = lvlnext - userinfo['EXP']
-        keyb = Methods.construct_keyboard(inline="true", b1=Methods.make_button(label="/топ", color="positive"), b2=Methods.make_button(label="/инфо"))
+        keyb = Methods.construct_keyboard(inline=Methods.check_keyboard(userinfo['inline']), b1=Methods.make_button(label="/топ", color="positive"), b2=Methods.make_button(label="/инфо"))
         Methods.send(userinfo['chat_id'], f"🏅 Ваш уровень: {lvl}\nEXP: {userinfo['EXP']}\nСледующий уровень через {nexp} EXP", keyboard=keyb)
 
     def autopoliv(userinfo, text):
@@ -581,7 +583,7 @@ class Commands:
                         pr = time.strftime("%H:%M", time.localtime(d))
                         Methods.mysql_query(f"UPDATE vk SET autopoliv={d}")
                         Methods.mysql_query(f"UPDATE users SET `EXP`=`EXP`-{n*20} WHERE vkid={userinfo['from_id']}")
-                        keyb = Methods.construct_keyboard(inline="true", b1=Methods.make_button(label="/топ", color="positive"), b2=Methods.make_button(label="/полив"), b3=Methods.make_button(color="secondary", label="/влага"))
+                        keyb = Methods.construct_keyboard(inline=Methods.check_keyboard(userinfo['inline']), b1=Methods.make_button(label="/топ", color="positive"), b2=Methods.make_button(label="/полив"), b3=Methods.make_button(color="secondary", label="/влага"))
                         Methods.send(userinfo['chat_id'], f"✔ Вы активировали автополив на {n} часов.\nАвтополив будет активен до {pr}.\nСписано {n*20} EXP", keyboard=keyb)
 
     def kazik(userinfo, text):
@@ -617,7 +619,7 @@ class Commands:
         else:
             win = random.randint(1, 200)
         tt = f"\nВыпало {win}."
-        keyb = Methods.construct_keyboard(b1=Methods.make_button(color="secondary", label="/уровень"), b2=Methods.make_button(color="secondary", label="/топ"), inline="true")
+        keyb = Methods.construct_keyboard(b1=Methods.make_button(color="secondary", label="/уровень"), b2=Methods.make_button(color="secondary", label="/топ"), inline=Methods.check_keyboard(userinfo['inline']))
         if((win <= 100 and y == 2) or (win >= 101 and y == 1)):
             Methods.send(userinfo['chat_id'], f"Вы проиграли {stav} EXP.{tt}\nВаши EXP {userinfo['EXP']-stav}.", keyboard=keyb)
             Methods.mysql_query(f"UPDATE users SET `EXP`=`EXP`-{stav} WHERE vkid={userinfo['from_id']}")
