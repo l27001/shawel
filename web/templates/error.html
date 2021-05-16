@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html><head>
+    <title>{{code}} - {{description}}</title>
+    <meta charset="utf-8"/>
+    <link rel="stylesheet" href="https://ezdomain.ru/css/fonts.css">
+    <style type="text/css">
+        body {font-size:14px; background-color:#31363b; color:#C2C3C4; font-family:Cascadia-Code; text-align:center;}
+        h1 {font-size:180px; color:#E3E3E3; margin: 70px 0 0 0;}
+        h2 {color: #EE4C1B; font-size: 20px; font-weight: bold; margin: -3px 0 39px;}
+        h4 {margin-top: 40px; font-weight: bold;}
+        p {width:320px; text-align:center; margin-left:auto;margin-right:auto; margin-top: 30px }
+        div {width:320px; text-align:center; margin-left:auto;margin-right:auto;}
+        a {color: #298ED9;}
+        a:visited {color: #298ED9;}
+        i {color: #EE4C1B;}
+    </style>
+</head>
+
+<body>
+    <p><a id="hdr" href="https://ezdomain.ru/">ezdomain.ru</a></p>
+    <h1>{{ code }}</h1>
+    <h2>{{ description }}</h2>
+    <div>
+        {{ full_description }}<br>
+        Вы можете вернуться на <a id="lnk" href="https://ezdomain.ru/">домашнюю</a> или <a href="javascript:%20history.go(-1)">предыдущую страницу</a>.
+    </div>
+    <div><h4>Powered by <i>EZdomain Project</i></h4></div>
+    <script>
+        document.getElementById("lnk").href = location.protocol+"//"+location.host;
+        document.getElementById("hdr").href = location.protocol+"//"+location.host;
+        document.getElementById("hdr").text = location.host;
+    </script>
+</body>
+</html>
+ 

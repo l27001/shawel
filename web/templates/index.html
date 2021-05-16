@@ -1,0 +1,23 @@
+{% extends 'content/base.html' %}
+
+{% block content %}
+<div class="slider" id="slider">
+  <ul class="slider-list">
+  	<noscript><center><p style="color: black;">Для работы необходим JavaScript!</p></center></noscript>
+    {% if rasp %}
+      {% for n in rasp %}
+        <li class="slider-element"><img src="{{ url_for('getimg') }}?id={{ n }}"></li>
+      {% endfor %}
+    {% else %}
+    	<center><b style="color: black;">Расписания нет.</b></center>
+    {% endif %}
+  </ul>
+  <div class="slider-arrow-left"></div>
+  <div class="slider-arrow-right"></div>
+  <div class="slider-dots"></div>
+  {% if update %}
+  <div class="under-slider" style="left: 0; margin-left: 4%;">Последнее обновление:<br>{{ update['rasp-updated'] }}</div>
+  <div class="under-slider" style="right: 0; margin-right: 4%;">Последняя проверка:<br>{{ update['rasp-checked'] }}</div>
+  {% endif %}
+</div>
+{% endblock %}

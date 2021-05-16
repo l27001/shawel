@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 from flask import Flask, jsonify, request, Response
 import datetime
-from collections import OrderedDict
 from methods import Methods
 
 app = Flask(__name__)
@@ -102,7 +101,7 @@ def users_list():
     return resp
 
 if __name__ == '__main__':
-    app.run('192.168.1.111', debug=True)
+    app.run('192.168.1.6', debug=True)
     # from waitress import serve
     # serve(app, host="192.168.1.6", port=5000)
 
