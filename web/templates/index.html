@@ -6,7 +6,7 @@
   	<noscript><center><p style="color: black;">Для работы необходим JavaScript!</p></center></noscript>
     {% if rasp %}
       {% for n in rasp %}
-        <li class="slider-element"><img src="{{ url_for('getimg') }}?id={{ n }}"></li>
+        <li class="slider-element"><img src="{{ url_for('getimg', id_=n) }}"></li>
       {% endfor %}
     {% else %}
     	<center><b style="color: black;">Расписания нет.</b></center>

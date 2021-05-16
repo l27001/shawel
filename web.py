@@ -39,21 +39,19 @@ def zvonki():
     # response = Methods.mysql_query("SELECT `rasp-checked`,`rasp-updated` FROM vk")
     return render_template('zvonki.html', title='Расписание звонков', rasp=rasp)
 
-@app.route('/getimg', methods=['GET'])
-def getimg():
-    id_ = request.args.get('id')
+@app.route('/image/id_<id_>', methods=['GET'])
+def getimg(id_):
+    #id_ = request.args.get('id')
     if_mod = request.headers.get('If-Modified-Since')
-    if(id_ == None):
-        return "Error. GET value 'id' must be set.", 400
     try:
         id_ = int(id_)
     except ValueError:
-        return "Error. GET value 'id' is not int.", 400
+        return err404(404)
     if(if_mod != None and datetime.strptime(if_mod, "%a, %d %b %Y %H:%M:%S GMT") < datetime.now()+timedelta(seconds=14400)):
         return '', 304 #cached
     img = Methods.mysql_query("SELECT * FROM imgs WHERE id=%s", (id_))
     if(img == None):
-        return "Error. Image with that id doesn't exist.", 404
+        return err404(404)
     return (img['image'],
         200, {'Content-Type': f"image/{img['type']}",
             'Content-Size': img['size'],

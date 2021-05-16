@@ -122,7 +122,7 @@ ul.nav1 a {
   text-align: center;
 }
 ul.nav1 a:hover{
-  background-color: #31363b;
+  background-color: #4a4b4d;
   border-radius: 10px;
   border: 2px #31363b;
   color: #f4f4f4;
@@ -152,7 +152,7 @@ ul.nav a {
   text-align: center;
 }
 ul.nav a:hover{
-  background-color: #31363b;
+  background-color: #4a4b4d;
   border-radius: 10px;
   border: 2px #31363b;
   color: #f4f4f4;

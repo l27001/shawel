@@ -7,7 +7,7 @@
     <center>
     {% if rasp %}
       {% for n in rasp %}
-        <li class="slider-element"><img style="width:55%;" src="{{ url_for('getimg') }}?id={{ n }}"></li>
+        <li class="slider-element"><img style="width:55%;" src="{{ url_for('getimg', id_=n) }}"></li>
       {% endfor %}
     {% else %}
       <b style="color: black;">Расписания звонков нет.</b>
