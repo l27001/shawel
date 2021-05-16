@@ -72,10 +72,10 @@ class Methods:
             Methods.log("Debug",f"Время запроса к MySQL: {str(timeit.default_timer()-extime)}")
         return data
 
-    def send(peer_id,message='',attachment='',keyboard='',disable_mentions=0,intent="default"):
+    def send(peer_id,message='',attachment='',keyboard='{"buttons":[]}',disable_mentions=0,intent="default"):
         return api.messages.send(peer_id=peer_id,random_id=random.randint(1,2147400000),message=message,attachment=attachment,keyboard=keyboard,disable_mentions=disable_mentions,intent=intent)
 
-    def mass_send(peer_ids,message='',attachment='',keyboard='',disable_mentions=0):
+    def mass_send(peer_ids,message='',attachment='',keyboard='{"buttons":[]}',disable_mentions=0):
         return api.messages.send(peer_ids=peer_ids,random_id=random.randint(1,2147400000),message=message,attachment=attachment,keyboard=keyboard,disable_mentions=disable_mentions)
 
     def upload_img(peer_id, file):
