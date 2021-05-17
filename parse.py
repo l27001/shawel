@@ -40,14 +40,6 @@ def job(mode=0):
             with open(tmp_dir+'/parse/rasp/'+n, 'rb') as f:
                 blob = f.read()
             Methods.mysql_query("INSERT INTO imgs (`image`,`type`,`size`,`mark`) VALUES (%s, %s, %s, %s)", (blob, n.split('.')[-1], os.path.getsize(tmp_dir+'/parse/rasp/'+n), 'rasp'))
-        at = ''
-        i = 0
-        for n in attach:
-            if(i < 1):
-                at = n
-            else:
-                at = at+","+n
-            i+=1
         txt = 'Новое расписание\nОбнаружено в '+date+'\nДля отписки используйте команду \'/рассылка\''
         if(mode == 0):
             rasp = Methods.mysql_query("SELECT COUNT(id) FROM `chats` WHERE raspisanie='1'")
@@ -58,18 +50,18 @@ def job(mode=0):
                 for n in r:
                     a.append(str(n['id']))
                 a = ",".join(a)
-                Methods.mass_send(peer_ids=a,message=txt,attachment=at)
+                Methods.mass_send(peer_ids=a,message=txt,attachment=attach)
                 i+=50
                 time.sleep(1)
             rasp = Methods.mysql_query("SELECT vkid,raspisanie FROM users WHERE raspisanie>='1'", fetch="all")
             i = 0
             for n in rasp:
-                Methods.send(n['vkid'],message=txt,attachment=at,keyboard=Methods.construct_keyboard(b2=Methods.make_button(type="intent_unsubscribe",peer_id=n['vkid'],intent="non_promo_newsletter",label="Отписаться"),inline="true"),intent="non_promo_newsletter")
+                Methods.send(n['vkid'],message=txt,attachment=attach,keyboard=Methods.construct_keyboard(b2=Methods.make_button(type="intent_unsubscribe",peer_id=n['vkid'],intent="non_promo_newsletter",label="Отписаться"),inline="true"),intent="non_promo_newsletter")
                 i+=1
                 time.sleep(1)
         else:
-            Methods.send(331465308,message=txt,attachment=at)
-        Methods.mysql_query(f"UPDATE vk SET `rasp-updated`='{date}', `rasp`='{at}'")
+            Methods.send(331465308,message=txt,attachment=attach)
+        Methods.mysql_query(f"UPDATE vk SET `rasp-updated`='{date}', `rasp`='{','.join(attach)}'")
         with open(dir_path+'/parse/result.txt','w') as f:
             f.write(src)
         for n in os.listdir(tmp_dir+"/parse/rasp"):

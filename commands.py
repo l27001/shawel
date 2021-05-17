@@ -143,16 +143,6 @@ class Commands:
         """Тест"""
         Methods.send(userinfo['chat_id'], f"{scrname} by @l27001\nОбработано команд: {acmds}\nОшибок при выполнении команд: {aerrs}\nDebug: {DEBUG}\nЗапущен: {timestart.strftime('%Y-%m-%d %H:%M:%S')}\nВремя работы: {datetime.datetime.now()-timestart}", disable_mentions=1)
 
-    def goose(userinfo, text):
-        """Отправляет гуся"""
-        if(len(text) >= 1):
-            if(text[0].lower() == 'ш'):
-                Methods.send(userinfo['chat_id'], "", 'doc242730929_570000336')
-            else:
-                Methods.send(userinfo['chat_id'], "", 'doc242730929_570296408')
-        else:
-            Methods.send(userinfo['chat_id'], "", 'doc242730929_570296408')
-
     def clrkeyb(userinfo, text):
         """"""
         Methods.send(userinfo['chat_id'], "Clear keyboard", keyboard='{"buttons":[]}')
@@ -336,36 +326,6 @@ class Commands:
                 a = " ".join(list(deque(f, 10)))
             Methods.send(userinfo['chat_id'], a, disable_mentions=1)
 
-    def roma(userinfo, text):
-        """"""
-        Methods.send(userinfo['chat_id'], "Рома - начальник автодрома")
-
-    def valer(userinfo, text):
-        """"""
-        Methods.send(userinfo['chat_id'], "Нет, бл*ть, Акакий")
-
-    def ruslan(userinfo, text):
-        """"""
-        Methods.send(userinfo['chat_id'], "Полкан")
-
-    def kirill(userinfo, text):
-        """"""
-        a = random.randint(1, 3)
-        if(a == 1):
-            Methods.send(userinfo['chat_id'], "Хэз лил")
-        elif(a == 2):
-            Methods.send(userinfo['chat_id'], 'Ты - метил, ты - метил,\nИ зовут тебя Кирилл.\n"Очень очень маленький метил".\n\nТы - Кирилл, ты - Кирилл,\nИ, к сожалению, has lil.\n"Очень очень маленький", Кирилл...')
-        else:
-            Methods.send(userinfo['chat_id'], 'Я так счастлив Я так рад у меня есть ты хочу сказать благодарю но говорю Кирилл соси')
-
-    def vlad(userinfo, text):
-        """"""
-        Methods.send(userinfo['chat_id'], "Нет, влда")
-
-    def lera(userinfo, text):
-        """"""
-        Methods.send(userinfo['chat_id'], "Пох*й, мы [кибер]панк")
-
     def get(userinfo, text):
         """Выводит информацию о любом пользователе ВКонтакте."""
         if(len(text) < 1):
@@ -423,14 +383,6 @@ class Commands:
                 Methods.send(userinfo['chat_id'], "", response)
         except (KeyError, IndexError):
                 Methods.send(userinfo['chat_id'], "⚠ Необходима фотография!\n\n/demotiv Строка 1(обязат)\nстрока 2(не обязат)")
-
-    def invalid(userinfo, text):
-        """Проверка на инвалида"""
-        r = random.randint(0, 1)
-        if(userinfo['from_id'] == 524573062 or r == 0):
-            Methods.send(userinfo['chat_id'], "Вы инвалид 🗿")
-        else:
-            Methods.send(userinfo['chat_id'], "✔ Вы не инвалид")
 
     def help(userinfo, text):
         """Помощь"""
@@ -902,18 +854,6 @@ class Commands:
         Methods.mysql_query(f"INSERT INTO mute (chatid,vkid,date) VALUES ({userinfo['chat_id']},{replid},{curtime+mt})")
         Methods.send(userinfo['chat_id'],f"✔ Пользователю [id{replid}|{replid}] выдан мут на {mt} секунд.")
 
-    def python(userinfo, text):
-        """"""
-        rand = random.randint(0, 1)
-        if(rand == 0):
-            Methods.send(userinfo['chat_id'],attachment="photo331465308_457246275_be195a9d3957a9cceb")
-        else:
-            Methods.send(userinfo['chat_id'],"""Вновь печальный влда 
-И случалась у него беда
-Разозлился злой укроп
-Код сказал syntax error
-Агрессивно съев питон""")
-
     def switch_game(userinfo, text):
         """Включает/Отключает развлекательные команды (полив, казино) в беседе"""
         if(userinfo['chat_id'] == userinfo['from_id']):
@@ -1098,20 +1038,16 @@ class Commands:
 
 cmds = {'info':Commands.info, 'инфо':Commands.info, 
 'рандом':Commands.random, 'random':Commands.random, 
-'goose':Commands.goose, 'гусь':Commands.goose, 
 'time':Commands.time, 'время':Commands.time, 
 'test':Commands.test, 'тест':Commands.test, 
 'влага':Commands.vlaga, 'влажность':Commands.vlaga, 
 'погода':Commands.weather, 'weather':Commands.weather, 
 'топ':Commands.top, 
-'инвалид':Commands.invalid, 
 'полив':Commands.poliv, 'полить':Commands.poliv, 
 'расписание':Commands.raspisanie, 
 'send':Commands.send, 
 'рассылка':Commands.rass, 'подписаться':Commands.rass, 'отписаться':Commands.rass,
 'log':Commands.log, 'лог':Commands.log, 
-'рома':Commands.roma, 'валера':Commands.valer, 'валерий':Commands.valer, 'руслан':Commands.ruslan, 
-'кирилл':Commands.kirill, 'кирил':Commands.kirill, 'влад':Commands.vlad, 'лера':Commands.lera, 'валерия':Commands.lera, 
 'get':Commands.get, 
 'demotiv':Commands.demotiv,'dem':Commands.demotiv,'демотиватор':Commands.demotiv, 
 'help':Commands.help, 'помощь':Commands.help, 
@@ -1129,7 +1065,6 @@ cmds = {'info':Commands.info, 'инфо':Commands.info,
 'kick':Commands.kick,'кик':Commands.kick,
 'mute':Commands.mute,'мут':Commands.mute,
 'unmute':Commands.unmute,'размуть':Commands.unmute,'размутить':Commands.unmute,
-'python':Commands.python,'питон':Commands.python,'пайтон':Commands.python,
 'games':Commands.switch_game,
 "qpay":Commands.qiwi_create,"qcheck":Commands.qiwi_check,"qrevoke":Commands.qiwi_revoke,
 "meme":Commands.meme,
