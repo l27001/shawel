@@ -18,11 +18,14 @@ def job(mode=0):
         os.makedirs(tmp_dir+"/parse/rasp")
     date = datetime.datetime.today().strftime("%H:%M:%S %d.%m.%Y")
     Methods.mysql_query(f"UPDATE vk SET `rasp-checked`='{date}'")
-    try:
-        with open(dir_path+'/parse/result.txt','r') as f:
-            res = f.readline()
-    except FileNotFoundError:
-        res = ''
+    if(mode == 0):
+        try:
+            with open(dir_path+'/parse/result.txt','r') as f:
+                res = f.readline()
+        except FileNotFoundError:
+            res = None
+    else:
+        res = None
     if(res != src):
         with req.get(src, stream=True, headers=headers) as r:
             with open(tmp_dir+"/parse/raspisanie.pdf", "wb") as f:

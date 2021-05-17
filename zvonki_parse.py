@@ -17,11 +17,14 @@ def job(mode=0):
     if(os.path.isdir(tmp_dir+"/parse/zvonki") == False):
         os.makedirs(tmp_dir+"/parse/zvonki")
     date = datetime.datetime.today().strftime("%H:%M:%S %d.%m.%Y")
-    try:
-        with open(dir_path+'/parse/result-zvonki.txt','r') as f:
-            res = f.readline()
-    except FileNotFoundError:
-        res = ''
+    if(mode == 0):
+        try:
+            with open(dir_path+'/parse/result-zvonki.txt','r') as f:
+                res = f.readline()
+        except FileNotFoundError:
+            res = None
+    else:
+        res = None
     if(res != src):
         with req.get(src, stream=True, headers=headers) as r:
             with open(tmp_dir+"/parse/zvonki.pdf", "wb") as f:
