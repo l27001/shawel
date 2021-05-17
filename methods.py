@@ -108,8 +108,8 @@ class Methods:
         file = api.docs.save(file=file)
         return f"doc{file['audio_message']['owner_id']}_{file['audio_message']['id']}_{file['audio_message']['access_key']}"
 
-    def is_message_allowed(id):
-        return api.messages.isMessagesFromGroupAllowed(user_id=id,group_id=config.groupid)['is_allowed']
+    def is_message_allowed(id_):
+        return api.messages.isMessagesFromGroupAllowed(user_id=id_,group_id=config.groupid)['is_allowed']
 
     def get_conversation_members(peer_id):
         try:
@@ -127,8 +127,8 @@ class Methods:
     def del_message(message_ids,delete_for_all=1,group_id=config.groupid):
         return api.messages.delete(message_ids=message_ids,delete_for_all=1,group_id=config.groupid)
 
-    def set_typing(peer_id,type='typing',group_id=config.groupid):
-        api.messages.setActivity(group_id=config.groupid,peer_id=peer_id,type=type)
+    def set_typing(peer_id,type_='typing',group_id=config.groupid):
+        api.messages.setActivity(group_id=config.groupid,peer_id=peer_id,type=type_)
 
     def get_level(expa):
         for name, expp in levels.items():

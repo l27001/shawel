@@ -61,7 +61,7 @@ def job(mode=0):
             for n in rasp:
                 Methods.send(n['vkid'],message=txt,attachment=attach,keyboard=Methods.construct_keyboard(b2=Methods.make_button(type="intent_unsubscribe",peer_id=n['vkid'],intent="non_promo_newsletter",label="Отписаться"),inline="true"),intent="non_promo_newsletter")
                 i+=1
-                time.sleep(1)
+                time.sleep(.5)
         else:
             Methods.send(331465308,message=txt,attachment=attach)
         Methods.mysql_query(f"UPDATE vk SET `rasp-updated`='{date}', `rasp`='{','.join(attach)}'")
