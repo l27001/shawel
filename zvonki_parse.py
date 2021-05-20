@@ -63,7 +63,7 @@ def job(mode=0):
                 time.sleep(.5)
         else:
             Methods.send(331465308,message=txt,attachment=attach)
-        Methods.mysql_query("UPDATE vk SET zvonki='"+','.join(at)+"'")
+        Methods.mysql_query("UPDATE vk SET zvonki='"+','.join(attach)+"'")
         with open(dir_path+'/parse/result-zvonki.txt','w') as f:
             f.write(src)
         for n in os.listdir(tmp_dir+"/parse/zvonki"):
