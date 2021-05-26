@@ -40,6 +40,14 @@ img {
   z-index: 2;
   left: 0;
   top: 0;
+  display: flex;
+  justify-content: center;
+align-items: center;
+}
+
+.slider-element img {
+  max-width: 680px;
+  max-height: 700px;
   display: block;
 }
 
