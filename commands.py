@@ -606,7 +606,7 @@ class Commands:
         if(len(text) > 400):
             Methods.send(userinfo['chat_id'], "⚠ Слишком много символов (более 400)")
             return 0
-        Methods.set_typing(userinfo['chat_id'],type='audiomessage')
+        Methods.set_typing(userinfo['chat_id'],type_='audiomessage')
         try:
             file = mk_voice(text)
         except AssertionError:
