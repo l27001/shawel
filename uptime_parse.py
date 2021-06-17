@@ -15,7 +15,10 @@ def check_status(status, name):
         return f"❓ {name} -> {status}"
 
 def job():
-    res = requests.post('https://api.uptimerobot.com/v2/getMonitors?format=json', json={"api_key":uptimerobot_api}).json()
+    res = requests.post('https://api.uptimerobot.com/v2/getMonitors?format=json', json={"api_key":uptimerobot_api})
+    if(res.status_code != 200):
+        return True
+    res = res.json()
     monitors = res['monitors']
     stat = []
     allu = Methods.mysql_query("SELECT id, friendly_name FROM uptime ORDER BY friendly_name", fetch="all")
