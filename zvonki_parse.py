@@ -12,6 +12,9 @@ headers = {
 def job(mode=0):
     Methods.log("ZvonkiParser", "Парсер выполняет проверку...")
     resp = req.get("https://engschool9.ru/content/raspisanie.html", headers=headers)
+    if(resp.status_code != 200):
+        Methods.log("ZvonkiParser", f"Неожиданный код ответа: {resp.status_code}")
+        return True
     soup = BeautifulSoup(resp.text, 'html.parser')
     src = soup.findAll("iframe")[-1]['src']
     if(os.path.isdir(tmp_dir+"/parse/zvonki") == False):
