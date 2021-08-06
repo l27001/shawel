@@ -7,6 +7,10 @@ app = Flask(__name__,
     template_folder="web/templates/",
     static_folder="web/static/")
 
+@app.before_request
+def before_request():
+    if(request.path.startswith('/static/')): return None
+
 @app.errorhandler(403)
 def err403(e):
     return (render_template('error.html', code=403,
@@ -39,14 +43,10 @@ def zvonki():
     # response = Methods.mysql_query("SELECT `rasp-checked`,`rasp-updated` FROM vk")
     return render_template('zvonki.html', title='Расписание звонков', rasp=rasp)
 
-@app.route('/image/id_<id_>', methods=['GET'])
+@app.route('/image/id_<int:id_>', methods=['GET'])
 def getimg(id_):
     #id_ = request.args.get('id')
     if_mod = request.headers.get('If-Modified-Since')
-    try:
-        id_ = int(id_)
-    except ValueError:
-        return err404(404)
     if(if_mod != None and datetime.strptime(if_mod, "%a, %d %b %Y %H:%M:%S GMT") < datetime.now()+timedelta(seconds=14400)):
         return '', 304 #cached
     img = Methods.mysql_query("SELECT * FROM imgs WHERE id=%s", (id_))
@@ -72,7 +72,7 @@ def index():
     return render_template('index.html', title='Расписание', rasp=rasp, update=response)
 
 if __name__ == '__main__':
-    # app.run('192.168.1.6', port=5001, debug=True)
+    # app.run('127.0.0.1', port=5001, debug=True)
     from waitress import serve
     serve(app, host="127.0.0.1", port=5001)
 
