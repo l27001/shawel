@@ -2,6 +2,7 @@ from os.path import isfile, isdir
 from os import listdir, mkdir, remove
 from collections import deque
 import time, datetime, random, re, timeit, json
+
 from config import groupid
 from methods import Methods
 from other import dir_path, blackwords
@@ -10,7 +11,6 @@ from voice.voice import mk_voice
 import qiwi
 from zerkalo.zerkalo import zerkalo
 from text.text import text as mk_text
-
 from parse import job as do_parse
 from zvonki_parse import job as do_zvonki_parse
 
@@ -994,6 +994,7 @@ class Commands:
         """Вставляет текст внизу изображения"""
         if(len(text) == 0):
             Methods.send(userinfo['chat_id'], "/text [текст]\nНеобходима фотография")
+            return 0
         text = " ".join(text)
         k = []
         for n in userinfo['attachments']:
