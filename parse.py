@@ -20,7 +20,7 @@ def job(mode=0):
     if(os.path.isdir(tmp_dir+"/parse/rasp") == False):
         os.makedirs(tmp_dir+"/parse/rasp")
     date = datetime.datetime.today().strftime("%H:%M:%S %d.%m.%Y")
-    Methods.mysql_query(f"UPDATE vk SET `rasp-checked`='{date}'")
+    Mysql.query(f"UPDATE vk SET `rasp-checked`='{date}'")
     if(mode == 0):
         try:
             with open(dir_path+'/parse/result.txt','r') as f:
@@ -40,26 +40,26 @@ def job(mode=0):
         p = subprocess.Popen(["python3",f"{dir_path}/parse/wm.py","rasp",tmp_dir])
         p.wait()
         attach = []
-        Methods.mysql_query("DELETE FROM imgs WHERE mark='rasp'")
+        Mysql.query("DELETE FROM imgs WHERE mark='rasp'")
         for n in sorted(os.listdir(tmp_dir+"/parse/rasp")):
             attach.append(Methods.upload_img('331465308',tmp_dir+'/parse/rasp/'+n))
             with open(tmp_dir+'/parse/rasp/'+n, 'rb') as f:
                 blob = f.read()
-            Methods.mysql_query("INSERT INTO imgs (`image`,`type`,`size`,`mark`) VALUES (%s, %s, %s, %s)", (blob, n.split('.')[-1], os.path.getsize(tmp_dir+'/parse/rasp/'+n), 'rasp'))
+            Mysql.query("INSERT INTO imgs (`image`,`type`,`size`,`mark`) VALUES (%s, %s, %s, %s)", (blob, n.split('.')[-1], os.path.getsize(tmp_dir+'/parse/rasp/'+n), 'rasp'))
         txt = 'Новое расписание\nОбнаружено в '+date+'\nДля отписки используйте команду \'/рассылка\''
         if(mode == 0):
-            rasp = Methods.mysql_query("SELECT COUNT(id) FROM `chats` WHERE raspisanie='1'")
+            rasp = Mysql.query("SELECT COUNT(id) FROM `chats` WHERE raspisanie='1'")
             i = 0
             while i < rasp['COUNT(id)']:
                 a = []
-                r = Methods.mysql_query("SELECT id FROM `chats` WHERE raspisanie='1' LIMIT "+str(i)+", 50", fetch="all")
+                r = Mysql.query("SELECT id FROM `chats` WHERE raspisanie='1' LIMIT "+str(i)+", 50", fetch="all")
                 for n in r:
                     a.append(str(n['id']))
                 a = ",".join(a)
                 Methods.mass_send(peer_ids=a,message=txt,attachment=attach)
                 i+=50
                 time.sleep(1)
-            rasp = Methods.mysql_query("SELECT vkid,raspisanie FROM users WHERE raspisanie>='1'", fetch="all")
+            rasp = Mysql.query("SELECT vkid,raspisanie FROM users WHERE raspisanie>='1'", fetch="all")
             i = 0
             for n in rasp:
                 Methods.send(n['vkid'],message=txt,attachment=attach,keyboard=Methods.construct_keyboard(b2=Methods.make_button(type="intent_unsubscribe",peer_id=n['vkid'],intent="non_promo_newsletter",label="Отписаться"),inline="true"),intent="non_promo_newsletter")
@@ -67,7 +67,7 @@ def job(mode=0):
                 time.sleep(.5)
         else:
             Methods.send(331465308,message=txt,attachment=attach)
-        Methods.mysql_query(f"UPDATE vk SET `rasp-updated`='{date}', `rasp`='{','.join(attach)}'")
+        Mysql.query(f"UPDATE vk SET `rasp-updated`='{date}', `rasp`='{','.join(attach)}'")
         with open(dir_path+'/parse/result.txt','w') as f:
             f.write(src)
         for n in os.listdir(tmp_dir+"/parse/rasp"):
@@ -93,4 +93,8 @@ def run():
             time.sleep(60)
 
 if(__name__ == '__main__'):
-    run()
+    Mysql = Methods.Mysql()
+    try:
+        run()
+    finally:
+        Mysql.close()

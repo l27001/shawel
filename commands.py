@@ -38,21 +38,21 @@ class Commands:
             who = f"от {userr}[{str(from_id)}]"
         else:
             who = f"в {str(chat_id)} от {userr}[{str(from_id)}]"
-        userinfo = Methods.mysql_query("SELECT * FROM users WHERE vkid='"+str(from_id)+"' LIMIT 1")
+        userinfo = Mysql.query("SELECT * FROM users WHERE vkid='"+str(from_id)+"' LIMIT 1")
         if(userinfo == None):
-            Methods.mysql_query(f"INSERT INTO users (`vkid`) VALUES ('{from_id}')")
-            userinfo = Methods.mysql_query(f"SELECT * FROM users WHERE vkid='{from_id}' LIMIT 1")
+            Mysql.query(f"INSERT INTO users (`vkid`) VALUES ('{from_id}')")
+            userinfo = Mysql.query(f"SELECT * FROM users WHERE vkid='{from_id}' LIMIT 1")
         tlog = text.replace("\n",r" \n ")
         Methods.log("Message", f"'{tlog}' {who}")
         if(chat_id != from_id):
             curtime = int(time.time())
-            m = Methods.mysql_query(f"SELECT * FROM mute WHERE vkid = {from_id} AND chatid = {chat_id}")
+            m = Mysql.query(f"SELECT * FROM mute WHERE vkid = {from_id} AND chatid = {chat_id}")
             if(m != None):
                 if(curtime > m['date']):
-                    Methods.mysql_query(f"DELETE FROM mute WHERE vkid = {from_id} AND chatid = {chat_id}")
+                    Mysql.query(f"DELETE FROM mute WHERE vkid = {from_id} AND chatid = {chat_id}")
                 else:
                     if(m['warn']+1 < 3):
-                        Methods.mysql_query(f"UPDATE mute SET warn = warn + 1 WHERE vkid = {from_id} AND chatid = {chat_id}")
+                        Mysql.query(f"UPDATE mute SET warn = warn + 1 WHERE vkid = {from_id} AND chatid = {chat_id}")
                         if(Methods.is_message_allowed(from_id) == 1):
                             Methods.send(from_id,f"Вам было выдано предупреждение за разговор в муте. [{m['warn']+1}/3]")
                         else:
@@ -66,10 +66,10 @@ class Commands:
                 if('command' in obj['payload'] and obj['payload']['command'] == "internal_command"):
                     inline = Methods.check_keyboard(client_info['inline_keyboard'])
                     if(obj['payload']['action']['type'] == "intent_unsubscribe"):
-                        Methods.mysql_query(f"UPDATE users SET raspisanie='0' WHERE vkid='{from_id}'")
+                        Mysql.query(f"UPDATE users SET raspisanie='0' WHERE vkid='{from_id}'")
                         Methods.send(from_id, "Вы отписались от рассылки обновлений расписания.\nДля повторной подписки используйте команду '/рассылка'", keyboard=Methods.construct_keyboard(b1=Methods.make_button(type="intent_subscribe",peer_id=from_id,intent="non_promo_newsletter",label="Подписаться"),inline=inline))
                     elif(obj['payload']['action']['type'] == "intent_subscribe"):
-                        Methods.mysql_query(f"UPDATE users SET raspisanie='1' WHERE vkid='{from_id}'")
+                        Mysql.query(f"UPDATE users SET raspisanie='1' WHERE vkid='{from_id}'")
                         Methods.send(from_id, "Вы подписались на рассылку обновлений расписания.\nДля отписки используйте команду '/рассылка'", keyboard=Methods.construct_keyboard(b2=Methods.make_button(type="intent_unsubscribe",peer_id=from_id,intent="non_promo_newsletter",label="Отписаться"),inline=inline))
                     return None
             except TypeError: pass
@@ -80,10 +80,10 @@ class Commands:
         if(chat_id > 2000000000 and text[0][0] != '/'):
             return None
         elif(chat_id > 2000000000):
-            chatinfo = Methods.mysql_query(f"SELECT * FROM chats WHERE id = '{chat_id}' LIMIT 1")
+            chatinfo = Mysql.query(f"SELECT * FROM chats WHERE id = '{chat_id}' LIMIT 1")
             if(chatinfo == None):
-                Methods.mysql_query(f"INSERT INTO chats (`id`) VALUES ({chat_id})")
-                chatinfo = Methods.mysql_query(f"SELECT * FROM chats WHERE id = '{chat_id}' LIMIT 1")
+                Mysql.query(f"INSERT INTO chats (`id`) VALUES ({chat_id})")
+                chatinfo = Mysql.query(f"SELECT * FROM chats WHERE id = '{chat_id}' LIMIT 1")
             userinfo.update({'chatinfo':chatinfo})
         text[0] = text[0].lower()
         text[0] = text[0].replace('/','')
@@ -120,7 +120,7 @@ class Commands:
                 Methods.send(userinfo['chat_id'], "⚠ Invalid user_id")
                 return 0
         name = f"[id{uinfo[0]['id']}|{uinfo[0]['last_name']} {uinfo[0]['first_name']}]"
-        uinfo = Methods.mysql_query(f"SELECT * FROM users WHERE vkid='{uinfo[0]['id']}' LIMIT 1")
+        uinfo = Mysql.query(f"SELECT * FROM users WHERE vkid='{uinfo[0]['id']}' LIMIT 1")
         if(uinfo == None):
             Methods.send(userinfo['chat_id'], "⚠ Пользователь не найден в БД")
             return 0
@@ -159,7 +159,7 @@ class Commands:
 
     def vlaga(userinfo, text):
         """Проверить текущую влажность Щавеля"""
-        vlaga = Methods.mysql_query("SELECT vlaga FROM vk")['vlaga']
+        vlaga = Mysql.query("SELECT vlaga FROM vk")['vlaga']
         Methods.send(userinfo['chat_id'], "Влажность Щавеля составляет "+str(vlaga)+"%")
 
     def weather(userinfo, text):
@@ -197,7 +197,7 @@ class Commands:
 
     def top(userinfo, text):
         """Выводит топ садовников"""
-        data = Methods.mysql_query("SELECT EXP, vkid FROM users WHERE vkid!='500136993' and EXP!=0 ORDER BY EXP DESC LIMIT 10", fetch='all')
+        data = Mysql.query("SELECT EXP, vkid FROM users WHERE vkid!='500136993' and EXP!=0 ORDER BY EXP DESC LIMIT 10", fetch='all')
         a = len(data)
         i = 1
         for n in data:
@@ -221,7 +221,7 @@ class Commands:
 
     def poliv(userinfo, text):
         """Полей Щавеля!"""
-        bd_inf = Methods.mysql_query("SELECT vlaga,`time-poliv` FROM vk")
+        bd_inf = Mysql.query("SELECT vlaga,`time-poliv` FROM vk")
         if('chatinfo' in userinfo and userinfo['chatinfo']['game-cmds'] == 0):
             Methods.send(userinfo['chat_id'],"Данная команда отключена в этой беседе.")
             return 0
@@ -234,12 +234,12 @@ class Commands:
                 if(vl+bd_inf['vlaga'] > 100):
                     vl = 100-bd_inf['vlaga']
                 keyb = Methods.construct_keyboard(b1=Methods.make_button(label="/топ", color="positive"), b2=Methods.make_button(label="/влага", color="negative"), b3=Methods.make_button(label="/инфо", color="primary"), inline=Methods.check_keyboard(userinfo['inline']))
-                Methods.mysql_query(f"UPDATE users SET EXP=EXP+1 WHERE vkid='{userinfo['from_id']}'")
-                Methods.mysql_query("UPDATE vk SET `time-poliv`='"+str(timee)+"', `vlaga`='"+str(bd_inf['vlaga']+vl)+"'")
+                Mysql.query(f"UPDATE users SET EXP=EXP+1 WHERE vkid='{userinfo['from_id']}'")
+                Mysql.query("UPDATE vk SET `time-poliv`='"+str(timee)+"', `vlaga`='"+str(bd_inf['vlaga']+vl)+"'")
                 Methods.send(userinfo['chat_id'], "Вы полили Щавеля.\nВлага: "+str(bd_inf['vlaga']+vl)+"%", keyboard=keyb)
                 if(vl+bd_inf['vlaga'] == 100):
                     Methods.send(userinfo['chat_id'],"Влага достигла 100%. Вы получаете +10 бонусных EXP.")
-                    Methods.mysql_query(f"UPDATE users SET EXP=EXP+10 WHERE vkid='{userinfo['from_id']}'")
+                    Mysql.query(f"UPDATE users SET EXP=EXP+10 WHERE vkid='{userinfo['from_id']}'")
                 i = 0
                 kx = Methods.get_level(userinfo['EXP'])
                 kx1 = Methods.get_level(userinfo['EXP']+1)
@@ -255,7 +255,7 @@ class Commands:
 
     def raspisanie(userinfo, text):
         """Присылает последнее расписание"""
-        rasp = Methods.mysql_query("SELECT rasp FROM vk")['rasp']
+        rasp = Mysql.query("SELECT rasp FROM vk")['rasp']
         if(userinfo['raspisanie'] == 1 or userinfo['chat_id'] > 2000000000):
             text = "https://shawel.ezdomain.ru\n\nПоследнее расписание:"
             keyb = ''
@@ -309,12 +309,12 @@ class Commands:
             else:
                 Methods.send(userinfo['chat_id'],"Вы подписаны", keyboard=Methods.construct_keyboard(b2=Methods.make_button(type="intent_unsubscribe",peer_id=userinfo['from_id'],intent="non_promo_newsletter",label="Отписаться"),inline=Methods.check_keyboard(userinfo['inline'])))
         else:
-            count = Methods.mysql_query(f"SELECT COUNT(*) FROM `chats` WHERE id = {userinfo['chat_id']} AND raspisanie=1")['COUNT(*)']
+            count = Mysql.query(f"SELECT COUNT(*) FROM `chats` WHERE id = {userinfo['chat_id']} AND raspisanie=1")['COUNT(*)']
             if(count != 1):
-                Methods.mysql_query(f"UPDATE `chats` SET raspisanie=1 WHERE id='{userinfo['chat_id']}'")
+                Mysql.query(f"UPDATE `chats` SET raspisanie=1 WHERE id='{userinfo['chat_id']}'")
                 Methods.send(userinfo['chat_id'],"Вы подписали беседу на рассылку обновлений расписания.\nДля рассылки лично вам напишите боту в ЛС.")
             else:
-                Methods.mysql_query(f"UPDATE `chats` SET raspisanie=0 WHERE id='{userinfo['chat_id']}'")
+                Mysql.query(f"UPDATE `chats` SET raspisanie=0 WHERE id='{userinfo['chat_id']}'")
                 Methods.send(userinfo['chat_id'],"Вы отписали беседу от рассылки обновлений расписания.\nДля рассылки лично вам напишите боту в ЛС.")
 
     def log(userinfo, text):
@@ -405,7 +405,7 @@ class Commands:
 
     def status(userinfo, text):
         """Статус"""
-        response = Methods.mysql_query("SELECT * FROM uptime WHERE status != '2' ORDER BY friendly_name", fetch="all")
+        response = Mysql.query("SELECT * FROM uptime WHERE status != '2' ORDER BY friendly_name", fetch="all")
         if(response == ()):
             Methods.send(userinfo['chat_id'], "✔ Все в порядке.")
         else:
@@ -438,7 +438,7 @@ class Commands:
                 if(e.code == 113):
                     Methods.send(userinfo['chat_id'], "⚠ Invalid user_id")
                     return 0
-            uinfo = Methods.mysql_query(f"SELECT * FROM users WHERE vkid='{unfo[0]['id']}' LIMIT 1")
+            uinfo = Mysql.query(f"SELECT * FROM users WHERE vkid='{unfo[0]['id']}' LIMIT 1")
             if(uinfo == None):
                 Methods.send(userinfo['chat_id'], "⚠ Пользователь не найден в БД")
             else:
@@ -456,7 +456,7 @@ class Commands:
                 except ValueError:
                     Methods.send(userinfo['chat_id'], "⚠ Введено не число")
                     return 0
-                Methods.mysql_query("UPDATE users SET EXP=EXP"+text[1]+" WHERE vkid='"+str(uinfo['vkid'])+"' LIMIT 1")
+                Mysql.query("UPDATE users SET EXP=EXP"+text[1]+" WHERE vkid='"+str(uinfo['vkid'])+"' LIMIT 1")
                 Methods.send(userinfo['chat_id'], "✔ "+do+" "+text[1]+" EXP пользователю "+unfo[0]['last_name']+" "+unfo[0]['first_name'])
 
     def spam(userinfo, text):
@@ -499,7 +499,7 @@ class Commands:
         if(userinfo['dostup'] < 2):
             Methods.send(userinfo['chat_id'], "⛔ Не разрешено!")
         else:
-            Methods.mysql_query("UPDATE `vk` SET `time-poliv`=3")
+            Mysql.query("UPDATE `vk` SET `time-poliv`=3")
             Methods.send(userinfo['chat_id'], "✔ Success!")
 
     def level(userinfo, text):
@@ -513,7 +513,7 @@ class Commands:
 
     def autopoliv(userinfo, text):
         """Прекращает процесс высыхания Щавеля на определённое время"""
-        autopoliv = Methods.mysql_query("SELECT autopoliv FROM vk")['autopoliv']
+        autopoliv = Mysql.query("SELECT autopoliv FROM vk")['autopoliv']
         timee = int(time.time())
         if(autopoliv >= timee):
             Methods.send(userinfo['chat_id'], "⚠ Автополив уже активен.")
@@ -533,8 +533,8 @@ class Commands:
                     else:
                         d = timee+3600*n
                         pr = time.strftime("%H:%M", time.localtime(d))
-                        Methods.mysql_query(f"UPDATE vk SET autopoliv={d}")
-                        Methods.mysql_query(f"UPDATE users SET `EXP`=`EXP`-{n*20} WHERE vkid={userinfo['from_id']}")
+                        Mysql.query(f"UPDATE vk SET autopoliv={d}")
+                        Mysql.query(f"UPDATE users SET `EXP`=`EXP`-{n*20} WHERE vkid={userinfo['from_id']}")
                         keyb = Methods.construct_keyboard(inline=Methods.check_keyboard(userinfo['inline']), b1=Methods.make_button(label="/топ", color="positive"), b2=Methods.make_button(label="/полив"), b3=Methods.make_button(color="secondary", label="/влага"))
                         Methods.send(userinfo['chat_id'], f"✔ Вы активировали автополив на {n} часов.\nАвтополив будет активен до {pr}.\nСписано {n*20} EXP", keyboard=keyb)
 
@@ -574,10 +574,10 @@ class Commands:
         keyb = Methods.construct_keyboard(b1=Methods.make_button(color="secondary", label="/уровень"), b2=Methods.make_button(color="secondary", label="/топ"), inline=Methods.check_keyboard(userinfo['inline']))
         if((win <= 100 and y == 2) or (win >= 101 and y == 1)):
             Methods.send(userinfo['chat_id'], f"Вы проиграли {stav} EXP.{tt}\nВаши EXP {userinfo['EXP']-stav}.", keyboard=keyb)
-            Methods.mysql_query(f"UPDATE users SET `EXP`=`EXP`-{stav} WHERE vkid={userinfo['from_id']}")
+            Mysql.query(f"UPDATE users SET `EXP`=`EXP`-{stav} WHERE vkid={userinfo['from_id']}")
         else:
             Methods.send(userinfo['chat_id'], f"Вы выйграли {stav} EXP.{tt}\nВаши EXP {userinfo['EXP']+stav}.", keyboard=keyb)
-            Methods.mysql_query(f"UPDATE users SET `EXP`=`EXP`+{stav} WHERE vkid={userinfo['from_id']}")
+            Mysql.query(f"UPDATE users SET `EXP`=`EXP`+{stav} WHERE vkid={userinfo['from_id']}")
 
     def say(userinfo, text):
         """Скажи ...."""
@@ -634,7 +634,7 @@ class Commands:
                 if(e.code == 113):
                     Methods.send(userinfo['chat_id'], "⚠ Invalid user_id")
                     return 0
-            uinfo = Methods.mysql_query(f"SELECT * FROM users WHERE vkid='{unfo[0]['id']}' LIMIT 1")
+            uinfo = Mysql.query(f"SELECT * FROM users WHERE vkid='{unfo[0]['id']}' LIMIT 1")
             if(uinfo == None):
                 Methods.send(userinfo['chat_id'], "⚠ Пользователь не найден в БД")
             else:
@@ -649,7 +649,7 @@ class Commands:
                 except ValueError:
                     Methods.send(userinfo['chat_id'], "⚠ Введено не число")
                     return 0
-                Methods.mysql_query("UPDATE users SET dostup="+str(text[1])+" WHERE vkid='"+str(uinfo['vkid'])+"' LIMIT 1")
+                Mysql.query("UPDATE users SET dostup="+str(text[1])+" WHERE vkid='"+str(uinfo['vkid'])+"' LIMIT 1")
                 Methods.send(userinfo['chat_id'], f"✔ Установлен уровень доступа {text[1]} пользователю {unfo[0]['last_name']} {unfo[0]['first_name']}")
 
     def kick(userinfo, text):
@@ -771,12 +771,12 @@ class Commands:
         if(replid == groupid or replid == userinfo['from_id'] or replid == int(f"-{groupid}")):
             Methods.send(userinfo['chat_id'],"⚠ Этого человека нельзя замутить.")
             return 0
-        m = Methods.mysql_query(f"SELECT * FROM mute WHERE vkid = {replid} AND chatid = {userinfo['chat_id']}",fetch='all')
+        m = Mysql.query(f"SELECT * FROM mute WHERE vkid = {replid} AND chatid = {userinfo['chat_id']}",fetch='all')
         curtime = int(time.time())
         if(len(m) == 0):
             Methods.send(userinfo['chat_id'],"Этот человек не в муте.")
             return 0
-        Methods.mysql_query(f"DELETE FROM mute WHERE chatid = {userinfo['chat_id']} AND vkid = {replid}")
+        Mysql.query(f"DELETE FROM mute WHERE chatid = {userinfo['chat_id']} AND vkid = {replid}")
         Methods.send(userinfo['chat_id'],f"✔ Пользователю [id{replid}|{replid}] снят мут.")
 
     def mute(userinfo, text):
@@ -843,15 +843,15 @@ class Commands:
         if(replid == groupid or replid == userinfo['from_id'] or replid == int(f"-{groupid}")):
             Methods.send(userinfo['chat_id'],"⚠ Этого человека нельзя замутить.")
             return 0
-        m = Methods.mysql_query(f"SELECT * FROM mute WHERE vkid = {replid} AND chatid = {userinfo['chat_id']}",fetch='all')
+        m = Mysql.query(f"SELECT * FROM mute WHERE vkid = {replid} AND chatid = {userinfo['chat_id']}",fetch='all')
         curtime = int(time.time())
         if(len(m) >= 1):
             if(curtime <= m[0]['date']):
                 Methods.send(userinfo['chat_id'],"Этот человек уже в муте.")
                 return 0
             else:
-                Methods.mysql_query(f"DELETE FROM mute WHERE chatid = {userinfo['chat_id']} AND vkid = {replid}")
-        Methods.mysql_query(f"INSERT INTO mute (chatid,vkid,date) VALUES ({userinfo['chat_id']},{replid},{curtime+mt})")
+                Mysql.query(f"DELETE FROM mute WHERE chatid = {userinfo['chat_id']} AND vkid = {replid}")
+        Mysql.query(f"INSERT INTO mute (chatid,vkid,date) VALUES ({userinfo['chat_id']},{replid},{curtime+mt})")
         Methods.send(userinfo['chat_id'],f"✔ Пользователю [id{replid}|{replid}] выдан мут на {mt} секунд.")
 
     def switch_game(userinfo, text):
@@ -873,10 +873,10 @@ class Commands:
             Methods.send(userinfo['chat_id'],"⛔ Нет доступа")
             return 0
         if(userinfo['chatinfo']['game-cmds'] == 0):
-            Methods.mysql_query(f"UPDATE chats SET `game-cmds`=1 WHERE id={userinfo['chat_id']}")
+            Mysql.query(f"UPDATE chats SET `game-cmds`=1 WHERE id={userinfo['chat_id']}")
             Methods.send(userinfo['chat_id'],"⚠ Развлекательные команды включены.")
         else:
-            Methods.mysql_query(f"UPDATE chats SET `game-cmds`=0 WHERE id={userinfo['chat_id']}")
+            Mysql.query(f"UPDATE chats SET `game-cmds`=0 WHERE id={userinfo['chat_id']}")
             Methods.send(userinfo['chat_id'],"⚠ Развлекательные команды отключены.")
 
     def qiwi_create(userinfo, text):
@@ -959,7 +959,7 @@ class Commands:
 
     def zvonki(userinfo, text):
         """Отправляет расписание звонков"""
-        Methods.send(userinfo['chat_id'],"https://shawel.ezdomain.ru/zvonki",attachment=Methods.mysql_query("SELECT zvonki FROM vk")['zvonki'])
+        Methods.send(userinfo['chat_id'],"https://shawel.ezdomain.ru/zvonki",attachment=Mysql.query("SELECT zvonki FROM vk")['zvonki'])
 
     def zerkalo(userinfo, text):
         """Отзеркаливает изображение"""

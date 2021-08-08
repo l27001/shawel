@@ -33,23 +33,21 @@ def err405(e):
 
 @app.route('/zvonki', methods=['GET'])
 def zvonki():
-    response = Methods.mysql_query("SELECT id FROM imgs WHERE mark='zvonki' ORDER BY id", fetch="all")
+    response = Mysql.query("SELECT id FROM imgs WHERE mark='zvonki' ORDER BY id", fetch="all")
     if(len(response) > 0):
         rasp = []
         for n in response:
             rasp.append(n['id'])
     else:
         rasp = None
-    # response = Methods.mysql_query("SELECT `rasp-checked`,`rasp-updated` FROM vk")
     return render_template('zvonki.html', title='Расписание звонков', rasp=rasp)
 
 @app.route('/image/id_<int:id_>', methods=['GET'])
 def getimg(id_):
-    #id_ = request.args.get('id')
     if_mod = request.headers.get('If-Modified-Since')
     if(if_mod != None and datetime.strptime(if_mod, "%a, %d %b %Y %H:%M:%S GMT") < datetime.now()+timedelta(seconds=14400)):
         return '', 304 #cached
-    img = Methods.mysql_query("SELECT * FROM imgs WHERE id=%s", (id_))
+    img = Mysql.query("SELECT * FROM imgs WHERE id=%s", (id_))
     if(img == None):
         return err404(404)
     return (img['image'],
@@ -61,18 +59,22 @@ def getimg(id_):
 
 @app.route('/', methods=['GET'])
 def index():
-    response = Methods.mysql_query("SELECT id FROM imgs WHERE mark='rasp' ORDER BY id", fetch="all")
+    response = Mysql.query("SELECT id FROM imgs WHERE mark='rasp' ORDER BY id", fetch="all")
     if(len(response) > 0):
         rasp = []
         for n in response:
             rasp.append(n['id'])
     else:
         rasp = None
-    response = Methods.mysql_query("SELECT `rasp-checked`,`rasp-updated` FROM vk")
+    response = Mysql.query("SELECT `rasp-checked`,`rasp-updated` FROM vk")
     return render_template('index.html', title='Расписание', rasp=rasp, update=response)
 
 if __name__ == '__main__':
-    # app.run('127.0.0.1', port=5001, debug=True)
-    from waitress import serve
-    serve(app, host="127.0.0.1", port=5001)
+    Mysql = Methods.Mysql()
+    try:
+        # app.run('127.0.0.1', port=5001, debug=True)
+        from waitress import serve
+        serve(app, host="127.0.0.1", port=5001)
+    finally:
+        Mysql.close()
 

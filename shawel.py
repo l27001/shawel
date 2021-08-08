@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-import requests, time, multiprocessing, argparse, subprocess, builtins, os
+import requests, time, multiprocessing, argparse, subprocess, builtins, os, signal
 from datetime import datetime
 from random import randint
 from OpenSSL.SSL import Error as VeryError
@@ -20,6 +20,8 @@ from config import groupid, tmp_dir
 from other import dir_path, api
 from commands import Commands
 from methods import Methods
+
+builtins.Mysql = Methods.Mysql()
 
 ###
 def start():
@@ -91,15 +93,18 @@ def start():
                 Methods.log("WARN","Сервер не ответил. Жду 3 секунды перед повтором.")
                 time.sleep(3)
     except KeyboardInterrupt:
+        pass
+    finally:
         Methods.log("INFO","Завершение...")
         for n in sub:
-            n.terminate()
+            n.send_signal(signal.SIGINT)
         for root, dirs, files in os.walk(tmp_dir, topdown=False):
             for name in files:
                 os.remove(os.path.join(root, name))
             for name in dirs:
                 os.rmdir(os.path.join(root, name))
         os.rmdir(tmp_dir)
+        Mysql.close()
         exit()
 
 Methods.log("INFO",f"Запуск бота...")

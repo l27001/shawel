@@ -48,7 +48,7 @@ def err405(e):
 
 @app.route('/api/v1/parse/raspisanie/get', methods=['GET'])
 def rasp_get():
-    data = Methods.mysql_query("SELECT `rasp-updated`,`rasp-checked` FROM vk LIMIT 1")
+    data = Mysql.query("SELECT `rasp-updated`,`rasp-checked` FROM vk LIMIT 1")
     return make_json_response({'last-update':data['rasp-updated'],'last-checked':data['rasp-checked']})
 
 @app.route('/api/v1/users/get/<id_>', methods=['GET'])
@@ -57,11 +57,11 @@ def user_get(id_):
     if(key == None):
         resp = make_json_response({'error':"Value 'api-key' must be passed",'path':request.path}, request.args, 0)
         return (resp, 400)
-    data = Methods.mysql_query(f"SELECT key_ FROM api WHERE key_=%s LIMIT 1", (key))
+    data = Mysql.query(f"SELECT key_ FROM api WHERE key_=%s LIMIT 1", (key))
     if(data == None):
         resp = make_json_response({'error':"Invalid 'api-key'",'path':request.path,'api-key':key}, request.args, 0)
         return (resp, 400)
-    data = Methods.mysql_query(f"SELECT * FROM users WHERE vkid=%s LIMIT 1", (id_))
+    data = Mysql.query(f"SELECT * FROM users WHERE vkid=%s LIMIT 1", (id_))
     if(data == None):
         resp = make_json_response({'error':"No user with this id",'path':request.path,'id':id_}, status=0)
         return (resp, 404)
@@ -92,16 +92,19 @@ def users_list():
     if(key == None):
         resp = make_json_response({'error':"Value 'api-key' must be passed",'path':request.path}, request.args, 0)
         return (resp, 400)
-    data = Methods.mysql_query(f"SELECT key_ FROM api WHERE key_=%s LIMIT 1", (key))
+    data = Mysql.query(f"SELECT key_ FROM api WHERE key_=%s LIMIT 1", (key))
     if(data == None):
         resp = make_json_response({'error':"Invalid 'api-key'",'path':request.path,'api-key':key}, request.args, 0)
         return (resp, 400)
-    data = Methods.mysql_query(f"SELECT * FROM users LIMIT %s OFFSET %s", (count, offset), fetch='all')
+    data = Mysql.query(f"SELECT * FROM users LIMIT %s OFFSET %s", (count, offset), fetch='all')
     resp = make_json_response({'count':count, 'offset':offset, 'users':{'count':len(data), 'list':data}})
     return resp
 
 if __name__ == '__main__':
-    app.run('192.168.1.6', debug=True)
-    # from waitress import serve
-    # serve(app, host="192.168.1.6", port=5000)
-
+    Mysql = Methods.Mysql()
+    try:
+        app.run('192.168.1.6', debug=True)
+        # from waitress import serve
+        # serve(app, host="192.168.1.6", port=5000)
+    finally:
+        Mysql.close()

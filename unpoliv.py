@@ -5,12 +5,12 @@ import schedule
 from random import randint as random
 
 def job():
-	vk = Methods.mysql_query("SELECT vlaga,autopoliv FROM vk")
+	vk = Mysql.query("SELECT vlaga,autopoliv FROM vk")
 	rand = random(7,15)
 	if((vk['vlaga'] - rand) < 0):
 		rand = vk['vlaga']
 	if(vk['autopoliv'] < int(time()) and vk['vlaga'] > 0):
-		Methods.mysql_query(f"UPDATE vk SET `vlaga`=`vlaga`-{rand}")
+		Mysql.query(f"UPDATE vk SET `vlaga`=`vlaga`-{rand}")
 		if((vk['vlaga']-rand) == 0 and vk['vlaga'] > 0):
 			Methods.send(peer_id=2000000015,
 #				message="Щавель высох.",
@@ -29,4 +29,8 @@ def run():
 		exit()
 
 if(__name__ == '__main__'):
-	run()
+	Mysql = Methods.Mysql()
+	try:
+		run()
+	except:
+		Mysql.close()

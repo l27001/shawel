@@ -51,7 +51,10 @@ class Methods:
         resp = requests.get("https://api.openweathermap.org/data/2.5/weather?q="+location+"&appid=09ade3caac75957b990e25f6bb27b3f9&lang=ru&units=metric")
         return resp.json()
 
+    ### deprecated
     def mysql_query(query,variables=(),fetch="one",time=False):
+        print("[WARN] Вы используете устаревшую функцию mysql_query \
+            Вместо неё используйте класс Mysql")
         if(time == True):
             extime = timeit.default_timer()
         con = pymysql.connect(host=config.db['host'],
@@ -71,6 +74,41 @@ class Methods:
         if(time == True):
             Methods.log("Debug",f"Время запроса к MySQL: {str(timeit.default_timer()-extime)}")
         return data
+
+    class Mysql:
+
+        def __init__(self):
+            self.con = self.make_con()
+
+        def query(self,query,variables=(),fetch="one",time=False):
+            if(time == True):
+                extime = timeit.default_timer()
+            try:
+                cur = self.con.cursor()
+                cur.execute(query, variables)
+            except (InterfaceError,OperationalError):
+                self.con = make_con()
+                cur = self.con.cursor()
+                cur.execute(query, variables)
+            if(fetch == "one"):
+                data = cur.fetchone()
+            else:
+                data = cur.fetchall()
+            if(time == True):
+                Methods.log("Debug",f"Время запроса к MySQL: {str(timeit.default_timer()-extime)}")
+            return data
+
+        def make_con(self):
+            return pymysql.connect(host=config.db['host'],
+                user=config.db['user'],
+                password=config.db['password'],
+                db=config.db['database'],
+                charset='utf8mb4',
+                autocommit=True,
+                cursorclass=pymysql.cursors.DictCursor)
+
+        def close(self):
+            self.con.close()
 
     def send(peer_id,message='',attachment='',keyboard='{"buttons":[]}',disable_mentions=0,intent="default"):
         return api.messages.send(peer_id=peer_id,random_id=random.randint(1,2147400000),message=message,attachment=attachment,keyboard=keyboard,disable_mentions=disable_mentions,intent=intent)
