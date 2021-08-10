@@ -1,4 +1,5 @@
 import re, requests, datetime, os, random, timeit, pymysql, pymysql.cursors
+from pymysql.err import OperationalError, InterfaceError
 from other import api, dir_path, levels
 import config
 
