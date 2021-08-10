@@ -22,7 +22,6 @@ def text(file, text):
         razmm = W
     font = ImageFont.truetype(dir_path+'/NP.ttf', razm//17)
     text = [text]
-    #i = 0
     out = []
     w1,h1 = font.getsize(text[0])
     while len(text) != 0:
@@ -38,7 +37,6 @@ def text(file, text):
             w1,h1 = font.getsize(text[0])
         out.append(text[0])
         del(text[0])
-        #i+=1
     draw = ImageDraw.Draw(im)
     k = len(out)-1
     for n in out:
