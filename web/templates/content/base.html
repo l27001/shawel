@@ -15,7 +15,6 @@
 <body>
 	<center>
 	<ul class="nav1">
-		<!--img src="/imgs/logo.png" style="width: 5%; position: fixed; left: 10px; margin-top: -30px;"-->
 		<li><a href="{{ url_for('index') }}">Расписание уроков</a></li>
 		<li><a href="{{ url_for('zvonki') }}">Расписание звонков</a></li>
 	</ul><br>
@@ -27,10 +26,7 @@
 	{% block content %}{% endblock %}
 	<hr>
 	<em style="margin-left: 10px; padding-bottom: 30px;">© 2020-<span id="currentYear">2077</span> ShawelBot</em>
-	<!--div class="alert">
-	  <span class="closebtn" onclick="this.parentElement.style.opacity = \'0\';">×</span> 
-	  Ok
-	</div--> 
+	
 <script src="{{ url_for('static', filename='js/slider.js') }}" type="text/javascript"></script>
 
 <!-- VK Widget -->
