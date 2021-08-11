@@ -79,7 +79,7 @@ class Methods:
     class Mysql:
 
         def __init__(self):
-            self.con = self.make_con()
+            self.con = Methods.Mysql.make_con()
 
         def query(self,query,variables=(),fetch="one",time=False):
             if(time == True):
@@ -88,7 +88,7 @@ class Methods:
                 cur = self.con.cursor()
                 cur.execute(query, variables)
             except (InterfaceError,OperationalError):
-                self.con = make_con()
+                self.con = Methods.Mysql.make_con()
                 cur = self.con.cursor()
                 cur.execute(query, variables)
             if(fetch == "one"):
@@ -99,7 +99,7 @@ class Methods:
                 Methods.log("Debug",f"Время запроса к MySQL: {str(timeit.default_timer()-extime)}")
             return data
 
-        def make_con(self):
+        def make_con(self=None):
             return pymysql.connect(host=config.db['host'],
                 user=config.db['user'],
                 password=config.db['password'],
