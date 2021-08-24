@@ -78,6 +78,11 @@ class Commands:
         if(re.match(rf"\[(club|public){groupid}\|(@|\*){scrname}\]", text[0])):
             text.pop(0)
         if(chat_id > 2000000000 and text[0][0] != '/'):
+            if(text != []):
+                if(Mysql.query("SELECT id FROM markov WHERE id = %s", (chat_id)) is None):
+                    Mysql.query("INSERT INTO markov (`id`, `data`) VALUES (%s, %s)", (chat_id, " ".join(text)))
+                else:
+                    Mysql.query("UPDATE markov SET data = CONCAT(data, \" \", %s) WHERE id = %s", (" ".join(text), chat_id))
             return None
         elif(chat_id > 2000000000):
             chatinfo = Mysql.query(f"SELECT * FROM chats WHERE id = '{chat_id}' LIMIT 1")
